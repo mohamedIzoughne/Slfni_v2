@@ -8,9 +8,13 @@ import Login from "./app/screens/authentication/Login"
 import { useFonts } from "expo-font"
 import Signup from "./app/screens/authentication/Signup"
 import PasswordRetrieve from "./app/screens/authentication/PasswordRetrieve"
-import ConfirmEmail from "./app/screens/authentication/ConfirmEmail"
+import EmailVerification from './app/screens/authentication/EmailVerification';
 import OnboardingScreen from "./app/screens/landing/onBoardingScreen"
+
+import AddFriend from "./app/screens/AddFriend"
+
 import ProfileSetup from "./app/screens/authentication/profileSetup"
+
 import { useEffect } from "react"
 import { SplashScreen } from "expo-router"
 import Notifications from "./app/screens/Notifications"
@@ -38,7 +42,7 @@ export default function App() {
 
   return (
     <>
-      <StatusBar style="light" animated={true} />
+      <StatusBar style="auto" animated={true} />
       <NavigationContainer>
         <Stack.Navigator
           initialRouteName="Home"
@@ -50,10 +54,14 @@ export default function App() {
           <Stack.Screen name="Signup" component={Signup} />
           <Stack.Screen name="Home" component={Home} />
           <Stack.Screen name="ForgetPassword" component={PasswordRetrieve} />
-          <Stack.Screen name="ConfirmEmail" component={ConfirmEmail} />
+          <Stack.Screen name="EmailVerification" component={EmailVerification} />
           <Stack.Screen name="onBoarding" component={OnboardingScreen} />
+
+          <Stack.Screen name="AddFriend" component={AddFriend} />
+
           <Stack.Screen name="profileSetup" component={ProfileSetup} />
           <Stack.Screen name="notification" component={Notifications} />
+
         </Stack.Navigator>
       </NavigationContainer>
     </>

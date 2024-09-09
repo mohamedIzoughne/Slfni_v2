@@ -3,25 +3,18 @@ import {
   View,
   TextInput,
   Pressable,
-  TouchableOpacity,
-  TouchableHighlight,
+  Image,
   ScrollView,
-  KeyboardAvoidingView,
 } from "react-native"
 import { Link } from "@react-navigation/native"
-import { Platform } from "react-native"
 import "../../../global.css"
-
-function WelcomeText({ children }) {
-  return <Text className="font-bold text-xl">{children}</Text>
-}
 
 const LabeledInput = ({ label, placeholder, isTextSecure = false }) => {
   return (
-    <View>
-      <Text className="text-sm">{label}</Text>
+    <View className="mb-4">
+      <Text className="text-base mb-1 font-bold">{label}</Text>
       <TextInput
-        className="border border-[#C5C5C5] p-1 rounded w-[295px] h-[46px]"
+        className="border-2 border-[#C5C5C5] p-3 rounded-md"
         secureTextEntry={isTextSecure}
         placeholder={placeholder}
         placeholderTextColor="#757575"
@@ -32,20 +25,18 @@ const LabeledInput = ({ label, placeholder, isTextSecure = false }) => {
 
 function Login({ navigation }) {
   return (
-    <View className="flex-1 px-5 pt-5">
-      <View className="mt-[50px]">
-        <WelcomeText>Hey, there</WelcomeText>
-        <WelcomeText>
-          Experience Hassle-Free Lending and Borrowing Today!
-        </WelcomeText>
-      </View>
-      <Text className="text-[#969696] text-sm">
-        From here on out, you can now easily track your borrowers and lenders at
-        any time.
-      </Text>
+    <View className="flex-1 bg-white px-5 pt-10">
+      <ScrollView className="bg-white">
+        <View className="mb-8">
+          <Text className="font-bold text-2xl">Hey, there 👋</Text>
+          <Text className="font-bold text-2xl ">Experience Hassle-Free Lending and</Text>
+          <Text className="font-bold text-2xl ">Borrowing Today!</Text>
+          <Text className="text-gray-500 text-sm mt-2">
+            From here on out, you can now easily track your borrowers and lenders at any time.
+          </Text>
+        </View>
 
-      <View className="self-start">
-        <View className="mt-5 space-y-2.5">
+        <View className="mx-7">
           <LabeledInput
             label="Username or email"
             placeholder="Enter your username or email"
@@ -56,28 +47,39 @@ function Login({ navigation }) {
             placeholder="Enter password"
           />
         </View>
+
         <Link
-          className="text-right text-xs underline"
+          className="text-right text-sm font-medium text-black mb-4"
           to={{ screen: "ForgetPassword" }}
         >
           Forget password?
         </Link>
-        <View className="flex-1 justify-between mb-[170px]">
-          <Pressable
-            onPress={() => navigation.navigate("Home")}
-            className="bg-[#37C8C3] p-2.5 rounded mt-[30px] active:bg-[rgba(55,200,195,0.75)]"
-          >
-            <Text className="text-white font-bold text-xl text-center">
-              Login
-            </Text>
-          </Pressable>
-          <Text className="mt-auto text-center">
-            Don't have an account?{" "}
-            <Link className="font-bold" to={{ screen: "Signup" }}>
-              Register Now
-            </Link>
+
+        <Pressable
+          onPress={() => navigation.navigate("Home")}
+          className="bg-[#37C8C3] p-3 rounded-md mb-4"
+        >
+          <Text className="text-white font-bold text-lg text-center">
+            Login
           </Text>
-        </View>
+        </Pressable>
+
+        <Pressable className="border border-[#C5C5C5] rounded-md p-3 flex-row justify-center items-center mb-8">
+          <Image 
+            source={require('../../../assets/google-icon.webp')} 
+            style={{width: 20, height: 20, marginRight: 10}}
+          />
+          <Text className="text-black font-semibold">Continue with Google</Text>
+        </Pressable>
+      </ScrollView>
+
+      <View className="mt-auto pb-5">
+        <Text className="text-center">
+          Don't have an account?{" "}
+          <Link className="font-bold text-black" to={{ screen: "Signup" }}>
+            Register Now
+          </Link>
+        </Text>
       </View>
     </View>
   )
