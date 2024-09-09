@@ -10,8 +10,10 @@ import Signup from "./app/screens/authentication/Signup"
 import PasswordRetrieve from "./app/screens/authentication/PasswordRetrieve"
 import ConfirmEmail from "./app/screens/authentication/ConfirmEmail"
 import OnboardingScreen from "./app/screens/landing/onBoardingScreen"
+import ProfileSetup from "./app/screens/authentication/profileSetup"
 import { useEffect } from "react"
 import { SplashScreen } from "expo-router"
+import Notifications from "./app/screens/Notifications"
 
 export default function App() {
   const Stack = createNativeStackNavigator()
@@ -39,7 +41,7 @@ export default function App() {
       <StatusBar style="light" animated={true} />
       <NavigationContainer>
         <Stack.Navigator
-          initialRouteName="onBoarding"
+          initialRouteName="Home"
           screenOptions={{
             headerShown: false,
           }}
@@ -50,6 +52,8 @@ export default function App() {
           <Stack.Screen name="ForgetPassword" component={PasswordRetrieve} />
           <Stack.Screen name="ConfirmEmail" component={ConfirmEmail} />
           <Stack.Screen name="onBoarding" component={OnboardingScreen} />
+          <Stack.Screen name="profileSetup" component={ProfileSetup} />
+          <Stack.Screen name="notification" component={Notifications} />
         </Stack.Navigator>
       </NavigationContainer>
     </>
