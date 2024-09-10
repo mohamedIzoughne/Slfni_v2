@@ -5,16 +5,12 @@ import {
   FlatList,
   TouchableOpacity,
   SafeAreaView,
+  Image,
 } from "react-native"
 import { styled } from "nativewind"
 import Icon from "react-native-vector-icons/MaterialCommunityIcons"
 import IconEntypo from "react-native-vector-icons/Entypo"
 import Ionicons from "react-native-vector-icons/Ionicons"
-
-const StyledView = View
-const StyledText = Text
-const StyledTouchableOpacity = TouchableOpacity
-const StyledSafeAreaView = SafeAreaView
 
 const notifications = [
   {
@@ -54,75 +50,77 @@ const notifications = [
 
 const getIcon = (type) => {
   switch (type) {
-    case "event_initiated":
-    case "borrowing_initiated":
-    case "payment_received":
-    case "loan_created":
-      return "pencil"
     case "event_canceled":
-      return "calendar"
+      return require("../../assets/icons/event_notification.png")
     default:
-      return "bell"
+      return require("../../assets/icons/give_money.png")
   }
 }
 
 const NotificationItem = ({ item }) => (
-  <StyledView className="bg-gray-100 p-4 mb-2 rounded-lg flex-row items-start">
-    <Icon
+  <View className="bg-gray-100 text-[#5A5A5A] pt-3 pb-2 pr-3 pl-2 mb-2 rounded-lg flex-row items-start">
+    {/* <Icon
       name={getIcon(item.type)}
       size={24}
       color="#00B8B9"
       className="mr-3"
-    />
-    <StyledView className="flex-1">
-      <StyledText className="text-gray-800 mb-1">{item.message}</StyledText>
+    /> */}
+    <View className="w-9 h-9 p-2 bg-white rounded-full mr-2 overflow-hidden">
+      <Image className="w-full h-full" source={getIcon(item.type)} />
+    </View>
+    <View className="flex-1">
+      <Text className="text-gray-800 mb-1">{item.message}</Text>
       {item.action === "mark_as_read" ? (
-        <StyledTouchableOpacity className="self-end justify-end">
-          <StyledText className="text-primary">
-            Mark as read
-            <Ionicons
-              style={{ marginBottom: -10 }}
-              name="checkmark-done-outline"
-              size={16}
-              color="#00B8B9"
-            />
-          </StyledText>
-        </StyledTouchableOpacity>
+        <TouchableOpacity className="flex-row justify-end mt-4">
+          <Text className="text-primary">Mark as read</Text>
+          <Ionicons
+            className="ml-1 overflow-hidden relative -bottom-[2px]"
+            name="checkmark-done-outline"
+            size={15}
+            color="#00B8B9"
+          />
+        </TouchableOpacity>
       ) : (
-        <StyledView className="flex-row justify-end mt-2">
-          <StyledTouchableOpacity className="bg-gray-200 px-4 py-2 rounded mr-2">
-            <StyledText>Refuse</StyledText>
-          </StyledTouchableOpacity>
-          <StyledTouchableOpacity className="bg-primary px-4 py-2 rounded">
-            <StyledText className="text-white">Confirm</StyledText>
-          </StyledTouchableOpacity>
-        </StyledView>
+        <View className="flex-row justify-end  mt-4">
+          <TouchableOpacity className="bg-gray-200 px-4 py-2 rounded mr-2">
+            <Text>Refuse</Text>
+          </TouchableOpacity>
+          <TouchableOpacity className="bg-primary px-4 py-2 rounded">
+            <Text className="text-white">Confirm</Text>
+          </TouchableOpacity>
+        </View>
       )}
-    </StyledView>
-  </StyledView>
+    </View>
+  </View>
 )
 
-const NotificationsScreen = () => {
+const NotificationsScreen = ({ navigation }) => {
   return (
-    <StyledSafeAreaView className="flex-1 bg-white mt-10">
-      <StyledView className="flex-row items-center p-4 ">
-        <TouchableOpacity>
+    <SafeAreaView className="flex-1 bg-white mt-10">
+      <View className="flex-row items-center p-4 ">
+        <TouchableOpacity onPress={() => navigation.navigate("Home")}>
           <IconEntypo name="chevron-thin-left" size={30} color="#000" />
         </TouchableOpacity>
-      </StyledView>
-      <FlatList
-        data={notifications}
-        renderItem={({ item }) => <NotificationItem item={item} />}
-        keyExtractor={(item) => item.id}
-        contentContainerClassName="p-4"
-      />
-      <StyledView className="flex-row justify-around py-2 border-t border-gray-200">
-        <Icon name="home" size={24} color="#009688" />
-        <Icon name="account" size={24} color="#757575" />
-        <Icon name="file-document" size={24} color="#757575" />
-        <Icon name="cog" size={24} color="#757575" />
-      </StyledView>
-    </StyledSafeAreaView>
+      </View>
+      {notifications.length === 0 ? (
+        <FlatList
+          data={notifications}
+          renderItem={({ item }) => <NotificationItem item={item} />}
+          keyExtractor={(item) => item.id}
+          contentContainerClassName="p-4"
+        />
+      ) : (
+        <View className="flex-1 justify-start items-center mt-16">
+          <Image
+            source={require("../../assets/icons/no-notifications.png")}
+            style={{ width: 325, height: 325, marginBottom: 20 }}
+          />
+          <Text className="text-4xl text-[#757575] mt-4">
+            Nothing New Here !
+          </Text>
+        </View>
+      )}
+    </SafeAreaView>
   )
 }
 

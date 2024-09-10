@@ -29,10 +29,13 @@ function Login({ navigation }) {
       <ScrollView className="bg-white">
         <View className="mb-8">
           <Text className="font-bold text-2xl">Hey, there 👋</Text>
-          <Text className="font-bold text-2xl ">Experience Hassle-Free Lending and</Text>
+          <Text className="font-bold text-2xl ">
+            Experience Hassle-Free Lending and
+          </Text>
           <Text className="font-bold text-2xl ">Borrowing Today!</Text>
           <Text className="text-gray-500 text-sm mt-2">
-            From here on out, you can now easily track your borrowers and lenders at any time.
+            From here on out, you can now easily track your borrowers and
+            lenders at any time.
           </Text>
         </View>
 
@@ -56,7 +59,7 @@ function Login({ navigation }) {
         </Link>
 
         <Pressable
-          onPress={() => navigation.navigate("Home")}
+          onPress={() => navigation.navigate("Tabs")}
           className="bg-[#37C8C3] p-3 rounded-md mb-4"
         >
           <Text className="text-white font-bold text-lg text-center">
@@ -65,9 +68,9 @@ function Login({ navigation }) {
         </Pressable>
 
         <Pressable className="border border-[#C5C5C5] rounded-md p-3 flex-row justify-center items-center mb-8">
-          <Image 
-            source={require('../../../assets/google-icon.webp')} 
-            style={{width: 20, height: 20, marginRight: 10}}
+          <Image
+            source={require("../../../assets/google-icon.webp")}
+            style={{ width: 20, height: 20, marginRight: 10 }}
           />
           <Text className="text-black font-semibold">Continue with Google</Text>
         </Pressable>
