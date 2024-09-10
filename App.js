@@ -1,5 +1,4 @@
-import { StatusBar } from "expo-status-bar"
-import { Text, View } from "react-native"
+import { Text, View, StatusBar } from "react-native"
 import { Slot, Link } from "expo-router"
 import { NavigationContainer } from "@react-navigation/native"
 import { createNativeStackNavigator } from "@react-navigation/native-stack"
@@ -13,6 +12,8 @@ import OnboardingScreen from "./app/screens/landing/onBoardingScreen"
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs"
 import AddFriend from "./app/screens/AddFriend"
 import Icon from "react-native-vector-icons/FontAwesome"
+import Setting from "./app/screens/Setting"
+
 
 import ProfileSetup from "./app/screens/authentication/profileSetup"
 
@@ -109,8 +110,8 @@ export default function App() {
   }
 
   return (
-    <>
-      <StatusBar style="auto" animated={true} />
+    <View className="flex-1 bg-white">
+            <StatusBar style="auto" animated={true} />
       <NavigationContainer>
         <Stack.Navigator
           initialRouteName="Login"
@@ -126,11 +127,13 @@ export default function App() {
             component={EmailVerification}
           />
           <Stack.Screen name="onBoarding" component={OnboardingScreen} />
+          <Stack.Screen name="AddFriend" component={AddFriend}/>
           <Stack.Screen name="profileSetup" component={ProfileSetup} />
           <Stack.Screen name="notification" component={Notifications} />
+          <Stack.Screen name="setting" component={Setting} />
           <Stack.Screen name="Tabs" component={Tabs} />
         </Stack.Navigator>
       </NavigationContainer>
-    </>
+    </View>
   )
 }
