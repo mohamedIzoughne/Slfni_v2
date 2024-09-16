@@ -68,6 +68,7 @@ function Login({ navigation }) {
         navigation.navigate("Tabs")
       },
       (error) => {
+        console.log("-----------------")
         console.log(error)
         Alert.alert("Login failed", error, [{ text: "OK" }])
       }
@@ -78,7 +79,7 @@ function Login({ navigation }) {
     <View
       className={`flex-1 px-5 pt-10 ${
         userConfiguration.theme === "light" ? "bg-light" : "bg-dark"
-      } `}
+      } bg-light`}
     >
       {isLoading && (
         <View className="absolute w-full h-full inset-0 flex items-center justify-center">
@@ -123,11 +124,11 @@ function Login({ navigation }) {
 
         <Pressable
           onPress={handleLoginSubmission}
-          className={`p-3 rounded-md mb-4 ${
+          className={`p-3 rounded-md mb-4  ${
             userConfiguration.theme === "light"
               ? "bg-primary"
               : "bg-primary-dark"
-          }`}
+          } bg-primary`}
         >
           <Text className="text-white font-bold text-lg text-center">
             Login

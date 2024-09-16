@@ -11,40 +11,154 @@ import { styled } from "nativewind"
 import Icon from "react-native-vector-icons/MaterialCommunityIcons"
 import IconEntypo from "react-native-vector-icons/Entypo"
 import Ionicons from "react-native-vector-icons/Ionicons"
+import useHttp from "../hooks/useHttp"
+import { useContext, useEffect, useState } from "react"
+import { Context } from "../store/index"
 
-const notifications = [
+const notis = [
   {
-    id: "1",
-    type: "event_initiated",
-    message: "Your event has been initiated successfully.",
-    action: "mark_as_read",
+    amount: "50",
+    contexttype: "event",
+    date: "2024-09-15T12:00:00.000Z",
+    id: 1001,
+    imageurl: null,
+    name: "John Doe",
+    priority: 2,
+    title: "Event Canceled",
+    type: "eventCanceled",
+    withOpinion: false,
   },
   {
-    id: "2",
-    type: "borrowing_initiated",
-    message: "Your borrowing has been initiated successfully.",
-    action: "mark_as_read",
+    amount: "30",
+    contexttype: "loan",
+    date: "2024-09-14T11:00:00.000Z",
+    id: 1002,
+    imageurl: null,
+    name: "Jane Smith",
+    priority: 3,
+    title: "Payment Received",
+    type: "paymentReceived",
+    withOpinion: true,
   },
   {
-    id: "3",
-    type: "event_canceled",
-    message:
-      "The event [Event Name] has been canceled. Please acknowledge this update.",
-    action: "mark_as_read",
+    amount: "70",
+    contexttype: "event",
+    date: "2024-09-13T10:00:00.000Z",
+    id: 1003,
+    imageurl: null,
+    name: "Alice Johnson",
+    priority: 3,
+    title: "Event Invitation",
+    type: "eventInvitation",
+    withOpinion: false,
   },
   {
-    id: "4",
-    type: "payment_received",
-    message:
-      "A payment has been received for your loan to Mohamed Izourne. Please confirm receipt.",
-    action: "confirm_refuse",
+    amount: "100",
+    contexttype: "loan",
+    date: "2024-09-12T09:00:00.000Z",
+    id: 1004,
+    imageurl: null,
+    name: "Bob White",
+    priority: 4,
+    title: "Lending Initiated",
+    type: "lendingInitiated",
+    withOpinion: true,
   },
   {
-    id: "5",
-    type: "loan_created",
-    message:
-      "A loan has been created by Mohamed izourne[100dh]. Do you accept this transaction?",
-    action: "confirm_refuse",
+    amount: "60",
+    contexttype: "loan",
+    date: "2024-09-11T08:00:00.000Z",
+    id: 1005,
+    imageurl: null,
+    name: "Charles Green",
+    priority: 1,
+    title: "Successfully Paid",
+    type: "successfullyPaid",
+    withOpinion: true,
+  },
+  {
+    amount: "80",
+    contexttype: "loan",
+    date: "2024-09-10T07:00:00.000Z",
+    id: 1006,
+    imageurl: null,
+    name: "David Black",
+    priority: 3,
+    title: "Borrowing Initiated",
+    type: "borrowingInitiated",
+    withOpinion: false,
+  },
+  {
+    amount: "25",
+    contexttype: "loan",
+    date: "2024-09-09T06:00:00.000Z",
+    id: 1007,
+    imageurl: null,
+    name: "Eve Brown",
+    priority: 4,
+    title: "Refused Payment",
+    type: "refusedPayment",
+    withOpinion: true,
+  },
+  {
+    amount: "45",
+    contexttype: "event",
+    date: "2024-09-08T05:00:00.000Z",
+    id: 1008,
+    imageurl: null,
+    name: "Frank Yellow",
+    priority: 4,
+    title: "Member Refused",
+    type: "memberRefused",
+    withOpinion: false,
+  },
+  {
+    amount: "55",
+    contexttype: "event",
+    date: "2024-09-07T04:00:00.000Z",
+    id: 1009,
+    imageurl: null,
+    name: "George Blue",
+    priority: 2,
+    title: "Event Updated",
+    type: "eventUpdated",
+    withOpinion: true,
+  },
+  {
+    amount: "90",
+    contexttype: "loan",
+    date: "2024-09-06T03:00:00.000Z",
+    id: 1010,
+    imageurl: null,
+    name: "Hannah Red",
+    priority: 4,
+    title: "Refuse Lending",
+    type: "refuseLending",
+    withOpinion: false,
+  },
+  {
+    amount: "75",
+    contexttype: "event",
+    date: "2024-09-05T02:00:00.000Z",
+    id: 1011,
+    imageurl: null,
+    name: "Ivy Pink",
+    priority: 3,
+    title: "User Paid Event",
+    type: "userPaidEvent",
+    withOpinion: true,
+  },
+  {
+    amount: "85",
+    contexttype: "loan",
+    date: "2024-09-04T01:00:00.000Z",
+    id: 1012,
+    imageurl: null,
+    name: "Jack Purple",
+    priority: 4,
+    title: "Admin Declined Paying",
+    type: "adminDeclinedPaying",
+    withOpinion: true,
   },
 ]
 
@@ -57,44 +171,177 @@ const getIcon = (type) => {
   }
 }
 
-const NotificationItem = ({ item }) => (
-  <View className="bg-gray-100 text-[#5A5A5A] pt-3 pb-2 pr-3 pl-2 mb-2 rounded-lg flex-row items-start">
-    {/* <Icon
-      name={getIcon(item.type)}
-      size={24}
-      color="#00B8B9"
-      className="mr-3"
-    /> */}
-    <View className="w-9 h-9 p-2 bg-white rounded-full mr-2 overflow-hidden">
-      <Image className="w-full h-full" source={getIcon(item.type)} />
-    </View>
-    <View className="flex-1">
-      <Text className="text-gray-800 mb-1">{item.message}</Text>
-      {item.action === "mark_as_read" ? (
-        <TouchableOpacity className="flex-row justify-end mt-4">
-          <Text className="text-primary">Mark as read</Text>
-          <Ionicons
-            className="ml-1 overflow-hidden relative -bottom-[2px]"
-            name="checkmark-done-outline"
-            size={15}
-            color="#00B8B9"
-          />
-        </TouchableOpacity>
-      ) : (
-        <View className="flex-row justify-end  mt-4">
-          <TouchableOpacity className="bg-gray-200 px-4 py-2 rounded mr-2">
-            <Text>Refuse</Text>
+const makeMessage = (senderName, type, title, amount = "") => {
+  const messages = {
+    eventCanceled: `The event "${title}" has been canceled. Please acknowledge this update.`,
+    paymentReceived: `A payment has been received for your loan to ${senderName}. Please confirm receipt.`,
+    eventInvitation: `You have been invited to the event "${title}" created by ${senderName} with an amount of ${amount}. Do you accept this invitation?`,
+    lendingInitiated: `A loan request of ${amount} has been created by ${senderName}. Do you accept this transaction?`,
+    successfullyPaid: `${senderName} has confirmed that the loan "${title}" has been fully paid. The transaction is now closed.`,
+    borrowingInitiated: `${senderName} has declared that you have lent them money.`,
+    refusedPayment: `${senderName} has refused your payment declaration for the loan "${title}". They state that the debt has not been fully cleared. Please resolve this disagreement.`,
+
+    memberRefused: `${senderName} has declined the invitation to join the event as a member. Your participation has been canceled.`,
+    eventUpdated: `The event "${title}" has been updated. Please review the changes and confirm your participation.`,
+    refuseLending: `Your lending declaration was refused by ${senderName}. The transaction has not been accepted.`,
+    userPaidEvent: `${senderName} has declared that the payment for the event has been completed.`,
+    adminDeclinedPaying: `The admin (${senderName}) has declined your payment declaration for the event "${title}". Please review and update the payment details.`,
+  }
+
+  return messages[type]
+}
+const NotificationItem = ({ item }) => {
+  // actually not all of them it's just 4 I guess
+  const confirmHandler = () => {
+    switch (item.type) {
+      case "eventCanceled":
+        // Handle event canceled
+        break
+      case "paymentReceived":
+        // Handle payment received
+        break
+      case "eventInvitation":
+        // Handle event invitation
+        break
+      case "lendingInitiated":
+        // Handle lending initiated
+        break
+      case "successfullyPaid":
+        // Handle successfully paid
+        break
+      case "borrowingInitiated":
+        // Handle borrowing initiated
+        break
+      case "refusedPayment":
+        // Handle refused payment
+        break
+      case "memberRefused":
+        // Handle member refused
+        break
+      case "eventUpdated":
+        // Handle event updated
+        break
+      case "refuseLending":
+        // Handle refuse lending
+        break
+      case "userPaidEvent":
+        // Handle user paid event
+        break
+      case "adminDeclinedPaying":
+        // Handle admin declined paying
+        break
+      default:
+        // Handle default case
+        break
+    }
+  }
+  const refuseHandler = () => {
+    switch (item.type) {
+      case "eventCanceled":
+        // Handle event canceled
+        break
+      case "paymentReceived":
+        // Handle payment received
+        break
+      case "eventInvitation":
+        // Handle event invitation
+        break
+      case "lendingInitiated":
+        // Handle lending initiated
+        break
+      case "successfullyPaid":
+        // Handle successfully paid
+        break
+      case "borrowingInitiated":
+        // Handle borrowing initiated
+        break
+      case "refusedPayment":
+        // Handle refused payment
+        break
+      case "memberRefused":
+        // Handle member refused
+        break
+      case "eventUpdated":
+        // Handle event updated
+        break
+      case "refuseLending":
+        // Handle refuse lending
+        break
+      case "userPaidEvent":
+        // Handle user paid event
+        break
+      case "adminDeclinedPaying":
+        // Handle admin declined paying
+        break
+      default:
+        // Handle default case
+        break
+    }
+  }
+
+  return (
+    <View className="bg-gray-100 text-[#5A5A5A] pt-3 pb-2 pr-3 pl-2 mb-2 rounded-lg flex-row items-start">
+      <View className="w-9 h-9 p-2 bg-white rounded-full mr-2 overflow-hidden">
+        <Image className="w-full h-full" source={getIcon(item.type)} />
+      </View>
+      <View className="flex-1">
+        <Text className="text-gray-800 mb-1">
+          {makeMessage(item.senderName, item.type, item.title, item.amount)}
+        </Text>
+        {item.withOpinion ? (
+          <View className="flex-row justify-end  mt-4">
+            <TouchableOpacity
+              onPress={refuseHandler}
+              className="bg-gray-200 px-4 py-2 rounded mr-2"
+            >
+              <Text>Refuse</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={confirmHandler}
+              className="bg-primary px-4 py-2 rounded"
+            >
+              <Text className="text-white">Confirm</Text>
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <TouchableOpacity className="flex-row justify-end mt-4">
+            <Text className="text-primary">Mark as read</Text>
+            <Ionicons
+              className="ml-1 overflow-hidden relative -bottom-[2px]"
+              name="checkmark-done-outline"
+              size={15}
+              color="#00B8B9"
+            />
           </TouchableOpacity>
-          <TouchableOpacity className="bg-primary px-4 py-2 rounded">
-            <Text className="text-white">Confirm</Text>
-          </TouchableOpacity>
-        </View>
-      )}
+        )}
+      </View>
     </View>
-  </View>
-)
+  )
+}
 
 const NotificationsScreen = ({ navigation }) => {
+  const { sendData, isLoading } = useHttp()
+  const { userConfiguration } = useContext(Context)
+  const [notifications, setNotifications] = useState([])
+  useEffect(() => {
+    sendData(
+      "/notifications",
+      {
+        headers: {
+          authorization: `Bearer ${userConfiguration.accessToken}`,
+        },
+      },
+      (data) => {
+        setNotifications(notis)
+        // setNotifications(data.notifications)
+        console.log(data)
+      },
+      (err) => {
+        console.log(err)
+      }
+    )
+  }, [])
+
   return (
     <SafeAreaView className="flex-1 bg-white mt-10">
       <View className="flex-row items-center p-4 ">
@@ -102,9 +349,9 @@ const NotificationsScreen = ({ navigation }) => {
           <IconEntypo name="chevron-thin-left" size={30} color="#000" />
         </TouchableOpacity>
       </View>
-      {notifications.length === 0 ? (
+      {notifications.length !== 0 ? (
         <FlatList
-          data={notifications}
+          data={notis}
           renderItem={({ item }) => <NotificationItem item={item} />}
           keyExtractor={(item) => item.id}
           contentContainerClassName="p-4"

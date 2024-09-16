@@ -6,7 +6,7 @@ export const Context = createContext()
 
 let initialState = {
   notifications: [],
-  theme: Appearance.getColorScheme(),
+  theme: "",
   language: "en",
   name: "",
   notificationsPreference: true,
@@ -18,12 +18,19 @@ let initialState = {
 const getInitialState = async () => {
   const storedLanguage = await SecureStore.getItemAsync("language")
   const storedName = await SecureStore.getItemAsync("name")
+  const storedTheme = await SecureStore.getItemAsync("theme")
   const storedAccessToken = await SecureStore.getItemAsync("accessToken")
   const storedRefreshToken = await SecureStore.getItemAsync("refreshToken")
   const storedImageUrl = await SecureStore.getItemAsync("imageUrl")
   const storedNotificationsPreference = await SecureStore.getItemAsync(
     "notifications-preference"
   )
+  const expiresIn = await SecureStore.getItemAsync("expiresIn")
+
+  if (!storedTheme) {
+    const theme = Appearance.getColorScheme()
+    await SecureStore.setItemAsync("theme", theme)
+  }
 
   return {
     ...initialState,
@@ -37,7 +44,7 @@ const getInitialState = async () => {
   }
 }
 
-initialState = await getInitialState()
+// initialState = await getInitialState()
 // const saveAccessToken = async (accessToken) => {
 //   await SecureStore.setItemAsync("access-token", accessToken)
 // }
@@ -49,25 +56,31 @@ initialState = await getInitialState()
 const reducer = (state, action) => {
   switch (action.type) {
     case "SET_ACCESS_TOKEN":
-      SecureStore.setItemAsync("access-token", action.payload)
+      SecureStore.setItemAsync("access-token", JSON.stringify(action.payload))
       return { ...state, accessToken: action.payload }
     case "SET_REFRESH_TOKEN":
-      SecureStore.setItemAsync("refresh-token", action.payload)
+      SecureStore.setItemAsync("refresh-token", JSON.stringify(action.payload))
       return { ...state, refreshToken: action.payload }
     case "SET_NOTIFICATION_SETTINGS":
-      SecureStore.setItemAsync("notifications-preference", action.payload)
-      return { ...state, notificationsPreference: action.payload }
+      SecureStore.setItemAsync(
+        "notifications-preference",
+        JSON.stringify(action.payload)
+      )
+      return {
+        ...state,
+        notificationsPreference: !state.notificationsPreference,
+      }
     case "SET_THEME":
-      SecureStore.setItemAsync("theme", action.payload)
+      SecureStore.setItemAsync("theme", JSON.stringify(action.payload))
       return { ...state, theme: action.payload }
     case "SET_LANGUAGE":
-      SecureStore.setItemAsync("language", action.payload)
+      SecureStore.setItemAsync("language", JSON.stringify(action.payload))
       return { ...state, language: action.payload }
     case "SET_NAME":
-      SecureStore.setItemAsync("name", action.payload)
+      SecureStore.setItemAsync("name", JSON.stringify(action.payload))
       return { ...state, name: action.payload }
     case "SET_IMAGE_URL":
-      SecureStore.setItemAsync("image", action.payload)
+      SecureStore.setItemAsync("image", JSON.stringify(action.payload))
       return { ...state, imageUrl: action.payload }
     default:
       return state
@@ -104,10 +117,9 @@ export const AppProvider = ({ children }) => {
     setNotifications(notifications)
   }
 
-  const notificationSettingsHandler = (notificationsPreference) => {
+  const notificationSettingsHandler = () => {
     dispatch({
       type: "SET_NOTIFICATION_SETTINGS",
-      payload: notificationsPreference,
     })
   }
 

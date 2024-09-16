@@ -37,6 +37,7 @@ const LabeledInput = ({
 }
 
 export default function Signup({ navigation }) {
+  const [authUrl, setAuthUrl] = useState(null)
   const {
     userConfiguration,
     accessTokenHandler,
@@ -73,11 +74,12 @@ export default function Signup({ navigation }) {
         body: JSON.stringify(submissionData),
       },
       async (data) => {
+        console.log("access token: ", data.accessToken)
         accessTokenHandler(data.accessToken)
         refreshTokenHandler(data.refreshToken)
         nameHandler(data.user.name)
 
-        navigation.navigate("Tabs")
+        navigation.navigate("EmailVerification")
       },
       (error) => {
         Alert.alert("Signup failed", error, [{ text: "OK" }])
@@ -89,7 +91,7 @@ export default function Signup({ navigation }) {
     <View
       className={`flex-1  ${
         userConfiguration.theme === "light" ? "bg-light" : "bg-dark"
-      }`}
+      } bg-light`}
     >
       {isLoading && (
         <View className="absolute w-full h-full inset-0 flex items-center justify-center">
@@ -145,7 +147,10 @@ export default function Signup({ navigation }) {
             </Text>
           </Pressable>
 
-          <Pressable className="border border-primary rounded-md p-3 mt-4 flex-row justify-center items-center">
+          <Pressable
+            onPress={() => navigation.navigate("Oauth")}
+            className="border border-primary rounded-md p-3 mt-4 flex-row justify-center items-center"
+          >
             <Image
               source={require("../../../assets/google-icon.webp")}
               style={{ width: 20, height: 20, marginRight: 10 }}

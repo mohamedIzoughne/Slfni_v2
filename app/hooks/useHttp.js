@@ -12,6 +12,7 @@ const useHttp = () => {
 
       try {
         const url = `${process.env.EXPO_PUBLIC_SERVER_API || ""}${endpoint}`
+        console.log("0-", url)
         // Merge default headers and any custom headers provided in options
         const headers = {
           "Content-Type": "application/json",
@@ -31,13 +32,14 @@ const useHttp = () => {
 
         const data = await response.json()
 
+        console.log(data.message)
         if (response.ok) {
           if (onSuccess) onSuccess(data)
         } else {
           // console.log(data)
           // if (data.errors) {
-          console.log(data)
           // console.log(data)
+
           const error = data.message || "Request failed"
           throw new Error(error)
         }
