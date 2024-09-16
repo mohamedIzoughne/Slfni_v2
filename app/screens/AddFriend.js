@@ -12,8 +12,8 @@ export default function AddFriend({ navigation }) {
         return (
 
             <View className="flex-row items-center mt-4  ">
-                <View className="border border-primary rounded-lg ml-4 p-1">
-                    <Image source={Crow} className="w-[76px] h-[60px] rounded-xl  " />
+                <View className="border-2 border-primary rounded-lg ml-4 ">
+                    <Image source={Crow} className="w-[76px] h-[60px] rounded-xl " />
                 </View>
                 
                 <View className="flex-row items-center justify-between flex-grow mx-4 border border-t-0 border-r-0 border-l-0 border-gray-300 ">
@@ -34,7 +34,7 @@ export default function AddFriend({ navigation }) {
         <SafeAreaView
             className="flex-1 bg-white "
         >
-            <View className="flex-row justify-between items-center mt-20 mr-14 ml-4">
+            <View className="flex-row justify-between items-center mt-10 mr-14 ml-4">
                 <View className="flex-row items-center bg-slate-100 rounded-lg px-4 py-1 flex-grow mr-2">
                     <TextInput
                         className="flex-1 text-lg text-gray-800 font-medium rounded-lg py-2 pr-8"
@@ -47,7 +47,7 @@ export default function AddFriend({ navigation }) {
                     <Icon6 name="qrcode" size={24} color="white" />
                 </TouchableOpacity>
             </View>
-            <View className="mt-6 bg-slate-50 px-4 py-2  border border-r-0 border-b-0 border-l-0 border-slate-200 h-full">
+            <View className="mt-10 bg-slate-50 px-4 py-2  border border-r-0 border-b-0 border-l-0 border-slate-200 h-full">
                 <View className="flex-row items-center rounded-lg px-4 py-1  mr-2">
                     <Text className="text-base text-gray-400  rounded-lg py-2 pr-8">Choose your friend</Text>
                 </View>
@@ -57,23 +57,6 @@ export default function AddFriend({ navigation }) {
                     <Friend child="Jamal" location="Taznakht, Maroc" />
                     <Friend child="Khalid" location="Boujdour, Maroc" />
                 </View>
-            </View>
-
-            <View
-                className="flex-row justify-around w-full mt-auto pb-5"
-            >
-                <TouchableOpacity style={{ alignItems: "center" }}>
-                    <Icon name="home" size={24} color="black" />
-                </TouchableOpacity>
-                <TouchableOpacity style={{ alignItems: "center" }}>
-                    <Icon name="user-plus" size={24} color="green" />
-                </TouchableOpacity>
-                <TouchableOpacity style={{ alignItems: "center" }}>
-                    <Icon name="bar-chart" size={24} color="black" />
-                </TouchableOpacity>
-                <TouchableOpacity style={{ alignItems: "center" }}>
-                    <Icon name="cog" size={24} color="black" />
-                </TouchableOpacity>
             </View>
         </SafeAreaView>
     );

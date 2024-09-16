@@ -76,11 +76,11 @@ function Tabs() {
       />
       <Tab.Screen
         name="Settings"
-        component={"Settings"}
+        component={Setting}
         options={{
           headerShown: false,
-          tabBarIcon: ({ color, size }) => (
-            <Icon name="cog" size={size} color={color} />
+          tabBarIcon: ({ color, size, focused }) => (
+            <Icon name="cog" size={size} color={focused ? "#00B8B9" : color} />
           ),
         }}
       />
@@ -114,7 +114,7 @@ export default function App() {
             <StatusBar style="auto" animated={true} />
       <NavigationContainer>
         <Stack.Navigator
-          initialRouteName="Login"
+          initialRouteName="Tabs"
           screenOptions={{
             headerShown: false,
           }}
