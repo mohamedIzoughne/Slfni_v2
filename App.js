@@ -77,8 +77,8 @@ function Tabs() {
         component={Setting}
         options={{
           headerShown: false,
-          tabBarIcon: ({ color, size }) => (
-            <Icon name="cog" size={size} color={color} />
+          tabBarIcon: ({ color, size, focused }) => (
+            <Icon name="cog" size={size} color={focused ? "#00B8B9" : color} />
           ),
         }}
       />
@@ -137,5 +137,6 @@ export default function App() {
         </NavigationContainer>
       </View>
     </AppProvider>
+
   )
 }

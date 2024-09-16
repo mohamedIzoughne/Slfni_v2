@@ -45,6 +45,7 @@ export default function AddFriend({ navigation }) {
   const { userConfiguration } = useContext(Context)
   const { sendData, isLoading } = useHttp()
 
+
   const submitHandler = () => {
     if (searchInput.length < 4) {
       Alert.alert(
