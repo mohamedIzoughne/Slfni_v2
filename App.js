@@ -3,6 +3,7 @@ import { Slot, Link } from "expo-router"
 import { NavigationContainer } from "@react-navigation/native"
 import { createNativeStackNavigator } from "@react-navigation/native-stack"
 import Home from "./app/screens/Home"
+import Home2 from "./app/screens/Home2"
 import Login from "./app/screens/authentication/Login"
 import { useFonts } from "expo-font"
 import Signup from "./app/screens/authentication/Signup"
@@ -13,36 +14,33 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs"
 import AddFriend from "./app/screens/AddFriend"
 import Icon from "react-native-vector-icons/FontAwesome"
 import Setting from "./app/screens/Setting"
-
-
 import ProfileSetup from "./app/screens/authentication/profileSetup"
-
+import Constants from "expo-constants"
 import { useEffect } from "react"
 import { SplashScreen } from "expo-router"
 import Notifications from "./app/screens/Notifications"
-// function HomeScreen() {
-//   return (
-//     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-//       <Text>Home!</Text>
-//     </View>
-//   )
-// }
-
-// function SettingsScreen() {
-//   return (
-//     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-//       <Text>Settings!</Text>
-//     </View>
-//   )
-// }
+import { AppProvider } from "./app/store/index"
+import Oauth from "./app/screens/authentication/Oauth"
+import Loans from "./app/screens/loans/index"
+import UserLoanActivity from "./app/screens/loans/UserLoanActivity"
 
 function Tabs() {
   const Tab = createBottomTabNavigator()
   return (
     <Tab.Navigator>
-      <Tab.Screen
+      {/* <Tab.Screen
         name="Home"
         component={Home}
+        options={{
+          headerShown: false,
+          tabBarIcon: ({ color, size, focused }) => (
+            <Icon name="home" size={size} color={focused ? "#00B8B9" : color} />
+          ),
+        }}
+      /> */}
+      <Tab.Screen
+        name="Home"
+        component={Home2}
         options={{
           headerShown: false,
           tabBarIcon: ({ color, size, focused }) => (
@@ -76,7 +74,7 @@ function Tabs() {
       />
       <Tab.Screen
         name="Settings"
-        component={"Settings"}
+        component={Setting}
         options={{
           headerShown: false,
           tabBarIcon: ({ color, size }) => (
@@ -110,30 +108,34 @@ export default function App() {
   }
 
   return (
-    <View className="flex-1 bg-white">
-            <StatusBar style="auto" animated={true} />
-      <NavigationContainer>
-        <Stack.Navigator
-          initialRouteName="Login"
-          screenOptions={{
-            headerShown: false,
-          }}
-        >
-          <Stack.Screen name="login" component={Login} />
-          <Stack.Screen name="Signup" component={Signup} />
-          <Stack.Screen name="ForgetPassword" component={PasswordRetrieve} />
-          <Stack.Screen
-            name="EmailVerification"
-            component={EmailVerification}
-          />
-          <Stack.Screen name="onBoarding" component={OnboardingScreen} />
-          <Stack.Screen name="AddFriend" component={AddFriend}/>
-          <Stack.Screen name="profileSetup" component={ProfileSetup} />
-          <Stack.Screen name="notification" component={Notifications} />
-          <Stack.Screen name="setting" component={Setting} />
-          <Stack.Screen name="Tabs" component={Tabs} />
-        </Stack.Navigator>
-      </NavigationContainer>
-    </View>
+    <AppProvider>
+      <View className="flex-1 bg-light">
+        <StatusBar style="auto" animated={true} />
+        <NavigationContainer>
+          <Stack.Navigator
+            initialRouteName="login"
+            screenOptions={{
+              headerShown: false,
+            }}
+          >
+            <Stack.Screen name="login" component={Login} />
+            <Stack.Screen name="Signup" component={Signup} />
+            <Stack.Screen name="ForgetPassword" component={PasswordRetrieve} />
+            <Stack.Screen
+              name="EmailVerification"
+              component={EmailVerification}
+            />
+            {/* <Stack.Screen name="onBoarding" component={OnboardingScreen} /> */}
+            <Stack.Screen name="AddFriend" component={AddFriend} />
+            <Stack.Screen name="profileSetup" component={ProfileSetup} />
+            <Stack.Screen name="notification" component={Notifications} />
+            <Stack.Screen name="Oauth" component={Oauth} />
+            <Stack.Screen name="Loans" component={Loans} />
+            <Stack.Screen name="UserActivity" component={UserLoanActivity} />
+            <Stack.Screen name="Tabs" component={Tabs} />
+          </Stack.Navigator>
+        </NavigationContainer>
+      </View>
+    </AppProvider>
   )
 }
