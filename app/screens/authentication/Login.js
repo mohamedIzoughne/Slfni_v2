@@ -68,8 +68,6 @@ function Login({ navigation }) {
         navigation.navigate("Tabs")
       },
       (error) => {
-        console.log("-----------------")
-        console.log(error)
         Alert.alert("Login failed", error, [{ text: "OK" }])
       }
     )

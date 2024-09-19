@@ -23,6 +23,7 @@ import { AppProvider } from "./app/store/index"
 import Oauth from "./app/screens/authentication/Oauth"
 import Loans from "./app/screens/loans/index"
 import UserLoanActivity from "./app/screens/loans/UserLoanActivity"
+import CreateLoan from "./app/screens/loans/CreateLoan"
 
 function Tabs() {
   const Tab = createBottomTabNavigator()
@@ -113,7 +114,7 @@ export default function App() {
         <StatusBar style="auto" animated={true} />
         <NavigationContainer>
           <Stack.Navigator
-            initialRouteName="login"
+            initialRouteName="CreateLoan"
             screenOptions={{
               headerShown: false,
             }}
@@ -133,11 +134,11 @@ export default function App() {
             <Stack.Screen name="Oauth" component={Oauth} />
             <Stack.Screen name="Loans" component={Loans} />
             <Stack.Screen name="UserActivity" component={UserLoanActivity} />
+            <Stack.Screen name="CreateLoan" component={CreateLoan} />
             <Stack.Screen name="Tabs" component={Tabs} />
           </Stack.Navigator>
         </NavigationContainer>
       </View>
     </AppProvider>
-
   )
 }

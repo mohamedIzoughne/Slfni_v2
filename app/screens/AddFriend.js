@@ -18,7 +18,7 @@ import { useState } from "react"
 import useHttp from "../hooks/useHttp"
 import { Context } from "../store"
 
-const Friend = ({ name, username, onPress }) => {
+const Friend = ({ item, onAdd, onRemove }) => {
   const Crow = require("../../assets/59679082.png")
 
   return (
@@ -28,11 +28,25 @@ const Friend = ({ name, username, onPress }) => {
       </View>
       <View className="flex-row items-center justify-between flex-grow mx-4 border border-t-0 border-r-0 border-l-0 border-gray-300 ">
         <View className="h-24  justify-center ">
-          <Text className="text-2xl rounded-lg  ">{name}</Text>
-          <Text className="text-gray-400  rounded-lg">{username}</Text>
+          <Text className="text-2xl rounded-lg  ">{item.name}</Text>
+          <Text className="text-gray-400  rounded-lg">{item.username}</Text>
         </View>
-        <TouchableOpacity onPress={onPress}>
-          <Icon6 name="plus" size={24} color="#37C8C3" />
+        <TouchableOpacity
+          className="p-4"
+          onPress={item.isFriend ? onRemove : onAdd}
+        >
+          {item.isFriend ? (
+            <Icon6 name="user-check" size={15} color="#2F5B84" />
+          ) : (
+            <Icon6 name="user-plus" size={15} color="#2F5B84" />
+          )}
+          {/* {item.isFriend ? (
+            <Ionicons name="checkmark-sharp" size={17} color="#2F5B84" />
+          ) : (
+            <Icon6 name="plus" size={17} color="#2F5B84" />
+          )} */}
+          {/* <Icon6 name="plus" size={24} color="#37C8C3" />
+          <Icon6 name="checkmark-outline" size={24} color="#37C8C3" /> */}
         </TouchableOpacity>
       </View>
     </View>
@@ -44,7 +58,6 @@ export default function AddFriend({ navigation }) {
   const [searchInput, setSearchInput] = useState("")
   const { userConfiguration } = useContext(Context)
   const { sendData, isLoading } = useHttp()
-
 
   const submitHandler = () => {
     if (searchInput.length < 4) {
@@ -82,16 +95,50 @@ export default function AddFriend({ navigation }) {
         },
       },
       (data) => {
+        setSearchedUsers((prevUsers) => {
+          return prevUsers.map((user) => {
+            if (user.id === id) {
+              return { ...user, isFriend: true }
+            }
+            return user
+          })
+        })
         console.log(data)
       },
       (err) => {
-        console.log(err)
+        Alert.alert("Adding friend friend", err, [{ text: "OK" }])
+      }
+    )
+  }
+
+  const removeFriend = (id) => {
+    sendData(
+      `/friendship/remove/${id}`,
+      {
+        method: "DELETE",
+        headers: {
+          authorization: `Bearer ${userConfiguration.accessToken}`,
+        },
+      },
+      (data) => {
+        setSearchedUsers((prevUsers) => {
+          return prevUsers.map((user) => {
+            if (user.id === id) {
+              return { ...user, isFriend: false }
+            }
+            return user
+          })
+        })
+        console.log(data)
+      },
+      (err) => {
+        Alert.alert("Removing friend failed", err, [{ text: "OK" }])
       }
     )
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-white ">
+    <SafeAreaView className="relative flex-1 bg-white ">
       <View className="flex-row justify-between items-center mt-20 mr-14 ml-4">
         <View className="flex-row items-center bg-slate-100 rounded-lg px-4 py-1 flex-grow mr-2">
           <TextInput
@@ -115,15 +162,8 @@ export default function AddFriend({ navigation }) {
         </TouchableOpacity>
       </View>
       <View className="mt-6 bg-slate-50 px-4 py-2  border border-r-0 border-b-0 border-l-0 border-slate-200 h-full">
-        {isLoading && (
-          <View className="absolute w-full h-full inset-0 flex items-center justify-center">
-            <ActivityIndicator size="large" color="#554686" />
-          </View>
-        )}
         {isLoading ? (
-          <View className="absolute w-full h-full inset-0 flex items-center justify-center">
-            <ActivityIndicator size="large" color="#554686" />
-          </View>
+          <ActivityIndicator className="mt-28" size="large" color="#554686" />
         ) : searchedUsers.length === 0 ? (
           <View className="flex-row items-center justify-center mt-20">
             <Text className="text-gray-400  rounded-lg py-2 pr-8">
@@ -142,9 +182,9 @@ export default function AddFriend({ navigation }) {
               renderItem={({ item }) => (
                 <Friend
                   key={item.id}
-                  onPress={() => addFriend(item.id)}
-                  name={item.name}
-                  username={item.username}
+                  item={item}
+                  onAdd={() => addFriend(item.id)}
+                  onRemove={() => removeFriend(item.id)}
                 />
               )}
               keyExtractor={(item) => item.child}

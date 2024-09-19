@@ -39,7 +39,6 @@ const useHttp = () => {
           // console.log(data)
           // if (data.errors) {
           // console.log(data)
-
           const error = data.message || "Request failed"
           throw new Error(error)
         }
