@@ -1,67 +1,122 @@
-import React from "react"
-import { View, Text, SafeAreaView, TouchableOpacity } from "react-native"
-import { Ionicons } from "@expo/vector-icons"
+import React, { useEffect, useContext,useState } from "react"
+import { View, Text, SafeAreaView, TouchableOpacity,Image } from "react-native"
+import { Ionicons,FontAwesome,FontAwesome6  } from "@expo/vector-icons"
+import Icon from "react-native-vector-icons/FontAwesome6"
+import Hands from "../../assets/icons/hand-coin.svg"
+import Hands2 from "../../assets/icons/hand-coin2.svg"
+import Vector from "../../assets/Home/Vector.svg"
+import useHttp from "../hooks/useHttp"
+import { Context } from "../store"
+
+
 
 const Home = ({ navigation }) => {
+  const profileimage= require("../../assets/koro.png")
+  const [financialData, setFinancialData] = useState({
+    "totalLendings": null,
+    "totalBorrowings": null,
+    "totalLoans": null
+  });
+  const [totalMembershipPrice, setTotalMembershipPrice] = useState();
+
+  const { sendData, isLoading } = useHttp()
+  const { userConfiguration } = useContext(Context)
+  useEffect(() => {
+    sendData(
+      `/events/total-membership-price`,
+      {
+        headers: {
+          authorization: `Bearer ${userConfiguration.accessToken}`,
+        },
+      },
+      (data) => {
+        setTotalMembershipPrice(data.totalMembershipPrice)
+      },
+      (err) => {
+        console.log(err)
+      }
+    )
+    sendData(
+      `/loans/total-loans`,
+      {
+        headers: {
+          authorization: `Bearer ${userConfiguration.accessToken}`,
+        },
+      },
+      (data) => {
+        setFinancialData(data)
+      },
+      (err) => {
+        console.log(err)
+      }
+    )
+  }, [])
   return (
-    <SafeAreaView className="flex-1 bg-[#1F2937] p-5">
-      <View className="flex-row justify-between items-center mb-5">
-        <View className="w-10 h-10 rounded-full bg-[#3B82F6]" />
+    <SafeAreaView className="flex-1 bg-background p-5">
+      <View className="flex-row justify-between items-center mb-10">
+        <Image source={profileimage} className="w-14 h-14 rounded-full" />
         <View className="flex-row">
-          <TouchableOpacity className="w-[30px] h-[30px] rounded-full bg-[#4B5563] ml-2.5 justify-center items-center">
-            <Ionicons name="moon" size={20} color="#fff" />
-          </TouchableOpacity>
-          <View className="w-[30px] h-[30px] rounded-full bg-[#4B5563] ml-2.5" />
+        <FontAwesome name="moon-o" size={24} color="black" />
+                    <Ionicons className="ml-2.5" name="notifications" size={20} color="#666" />
+
         </View>
       </View>
 
-      <View className="bg-[#2563EB] rounded-2xl p-5 mb-5">
-        <Text className="text-[#E5E7EB] text-sm">Total Balance</Text>
-        <Text className="text-white text-2xl font-bold my-1.5">$29,865.00</Text>
-        <Text className="text-[#34D399] text-sm">+4.08% This Month</Text>
+      <View className="bg-[#E6F5FC] rounded-2xl p-5 mb-5 relative">
+        <View className="absolute top-0 right-0">
+            <Vector/>
+        </View>
+        <Text className="text-[#3C386B]/50 text-xl font-semibold">Total Balance</Text>
+        <View className="flex-row my-[15px]">
+          <Text className="text-[#3C386B] text-4xl font-bold">${financialData.totalLoans}.00 </Text>
+          <Text className="text-[#777498] text-4xl font-bold">DH</Text>
+        </View>
+        <View className="flex-row items-center">
+          <View className="p-1 bg-[#ffffff] rounded">
+            <FontAwesome6 name="arrow-trend-up" size={16} color="#1C9D21" />
+          </View>
+          <Text className="text-[#1C9D21]"> +4.08% This Month</Text>
+        </View>
       </View>
 
-      <View className="flex-row justify-between mb-5">
-        {["Pay", "Transfer", "Bills"].map((action, index) => (
-          <View key={index} className="items-center">
+      <View className="flex-row justify-between mb-10">
+        {["Lend", "Borrow", "Event"].map((action, index) => (
+          <View key={index} className={`rounded-md  pl-4  py-3 w-[32%] ${
+            index === 0
+              ? "bg-[#FCEEEF]"
+              : index === 1
+              ? "bg-[#E6F5FC]"
+              : "bg-[#E9F5E9]"
+          }`}>
             <View
-              className={`w-[50px] h-[50px] rounded-full justify-center items-center mb-1.5 ${
-                index === 0
-                  ? "bg-[#FF6B6B]"
-                  : index === 1
-                  ? "bg-[#4ECDC4]"
-                  : "bg-[#45B649]"
-              }`}
+              className={`justify-center gap-2  `}
             >
-              <Text className="text-white text-xl">
-                {action === "Transfer" ? "⇄" : "$"}
+              <Text className="text-2xl">
+              {action === "Lend" ? <Hands width={30} height={30} color="blue" />: action === "Borrow" ? <Icon name="arrow-right-arrow-left" size={30} color="#009EE0" /> : <Icon name="wallet" size={25} color="#1C9D21" />}
               </Text>
-            </View>
+              <Text className="text-[#777498] font-semibold">{action}</Text>
+              {action === "Lend" ? <Text className="text-[#3C386B] text-xl font-bold">${financialData.totalLendings}.00</Text> : action === "Borrow" ? <Text className="text-[#3C386B] text-xl font-bold">${financialData.totalBorrowings}.00</Text> : <Text className="text-[#3C386B] text-xl font-bold">${totalMembershipPrice}.00</Text>}
 
-            <Text className="text-[#E5E7EB] text-xs">{action}</Text>
-            <Text className="text-white text-sm font-bold">$204.00</Text>
+            </View>
           </View>
         ))}
       </View>
 
       <View className="mb-5">
-        <Text className="text-white text-lg font-bold mb-2.5">
+        <Text className="text-primary text-xl font-semibold mb-6">
           Loan Dashboard
         </Text>
-        <View className="flex-row justify-between">
+        <View className="flex-row justify-between flex-wrap">
           {["My Loans", "Create lending", "Create lending"].map(
             (option, index) => (
               <TouchableOpacity
-                onPress={() => {
-                  option === "My Loans"
-                    ? navigation.navigate("UserActivity")
-                    : null
-                }}
                 key={index}
-                className="bg-[#1E3A8A] rounded-lg p-2.5 items-center w-[30%]"
+                className="bg-primary rounded-[30px] w-[110px] h-[110px] py-5 px-4 gap-2 "
               >
-                <View className="w-[30px] h-[30px] rounded-md bg-[#2563EB] mb-1.5" />
-                <Text className="text-[#E5E7EB] text-xs text-center">
+                <View className="rounded-md bg-background w-[35px] aspect-square justify-center items-center ">
+                  <Hands2 color="#009EE0" width={30}  />
+                </View>
+                <Text className="text-white font-semibold">
                   {option}
                 </Text>
               </TouchableOpacity>
@@ -69,12 +124,13 @@ const Home = ({ navigation }) => {
           )}
         </View>
       </View>
+      
       <View className="flex-row justify-between mt-auto">
         {["home", "people", "chatbubble", "settings"].map((icon, index) => (
           <TouchableOpacity key={index} className="items-center">
-            <Ionicons name={icon} size={24} color="#666" />
-            <Text className="text-[#9CA3AF] text-xs mt-1.5">
-              {["Account", "Friends", "Kotler", "Setting"][index]}
+            <Ionicons name={icon} size={24} color={index === 0 ? "#3B82F6" : "#666"} />
+            <Text className={`text-xs mt-1.5 ${index === 0 ? "text-[#3B82F6]" : "text-gray-500"}`}>
+              {["Accueil", "Friends", "Panier", "Setting"][index]}
             </Text>
           </TouchableOpacity>
         ))}
