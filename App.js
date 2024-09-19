@@ -40,7 +40,7 @@ function Tabs() {
       /> */}
       <Tab.Screen
         name="Home"
-        component={Home2}
+        component={Home}
         options={{
           headerShown: false,
           tabBarIcon: ({ color, size, focused }) => (
@@ -127,6 +127,7 @@ export default function App() {
             />
             {/* <Stack.Screen name="onBoarding" component={OnboardingScreen} /> */}
             <Stack.Screen name="AddFriend" component={AddFriend} />
+            <Stack.Screen name="Home" component={Home} />
             <Stack.Screen name="profileSetup" component={ProfileSetup} />
             <Stack.Screen name="notification" component={Notifications} />
             <Stack.Screen name="Oauth" component={Oauth} />
