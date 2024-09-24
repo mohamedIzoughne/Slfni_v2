@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useContext, useEffect, useState } from "react"
 import {
   View,
   Text,
@@ -11,46 +11,87 @@ import {
 import { Ionicons } from "@expo/vector-icons"
 import IconEntypo from "react-native-vector-icons/Entypo"
 import { Octicons } from "react-native-vector-icons"
+import useHttp from "../../hooks/useHttp"
+import { Context } from "../../store"
+import { formatDateToLongMonthAndDay } from "../../utils/index"
 
 const dummyData = Array(10)
   .fill()
   .map((_, index) => ({
-    id: index,
+    id: index + 1705,
     name: "Mohamed Izourne",
     username: "@izourne",
     amount: "350 DH",
     editedDate: "May 3",
   }))
 
-const Friend = ({ item }) => {
+const Friend = ({ item, onPress }) => {
   return (
-    <TouchableOpacity className="flex-row items-center bg-background-light px-4 py-4">
+    <TouchableOpacity
+      onPress={onPress}
+      className="flex-row items-center bg-background-light px-4 py-4"
+    >
       <View
         style={{ borderRadius: 16 }}
         className="bg-primary mr-4 p-2 rounded-[16px]"
       >
         <Image
-          source={require("../../../assets/koro.png")}
+          source={require("../../../assets/person.png")}
           className="w-12 h-12 rounded-full "
         />
       </View>
       <View className="flex-1">
         <Text className="font-bold text-[#003566] text-sm ">{item.name}</Text>
-        <Text className="text-gray-600 ">{item.username}</Text>
+        <Text className="text-gray-600 ">@{item.username}</Text>
       </View>
       <View>
         <Text className="text-primary text-right text-xs">
-          Edited {item.editedDate}
+          {item.updatedAt
+            ? formatDateToLongMonthAndDay(item.updatedAt)
+            : "No loan"}
         </Text>
-        <View className="bg-primary py-1 justify-center items-center rounded-md mt-2">
-          <Text className="text-white font-bold text-xs">{item.amount}</Text>
+        <View className="bg-primary py-1 px-1 justify-center items-center rounded-md mt-2">
+          <Text
+            className={`text-white font-bold text-xs ${
+              item.settled ? "line-through" : ""
+            }`}
+          >
+            {parseFloat(item.lendingBalance)
+              .toFixed(2)
+              .replace(/\.?0+$/, "")}
+            Dh
+          </Text>
         </View>
       </View>
     </TouchableOpacity>
   )
 }
 
-const MyLoansScreen = () => {
+const MyLoansScreen = ({ navigation }) => {
+  const [friends, setFriends] = useState([])
+  const { sendData } = useHttp()
+  const { userConfiguration } = useContext(Context)
+  console.log("---------")
+  useEffect(() => {
+    sendData(
+      "/friendship/v2",
+      {
+        headers: {
+          Authorization: `Bearer ${userConfiguration.accessToken}`,
+        },
+      },
+      (data) => {
+        console.log(data)
+        console.log("----datas")
+        setFriends(data.relationships)
+      },
+      (error) => {
+        Alert.alert("Error", error, [{ text: "OK" }])
+        console.log(error)
+      }
+    )
+  }, [])
+
   return (
     <SafeAreaView className="flex-1 bg-background-light">
       <View className="bg-primary px-4 pt-8 pb-4">
@@ -89,10 +130,26 @@ const MyLoansScreen = () => {
       </View>
 
       <FlatList
-        data={dummyData}
+        data={friends}
         className="px-3 py-3 mb-3"
         keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => <Friend key={item.id} item={item} />}
+        renderItem={({ item }) => (
+          <Friend
+            onPress={() => {
+              console.log(item.id)
+              navigation.navigate("UserActivity", {
+                imageUrl: item.imageUrl,
+                friendId: item.id,
+                name: item.name,
+                username: item.username,
+                lendingBalance: item.lendingBalance,
+                settled: item.settled,
+              })
+            }}
+            key={item.id}
+            item={item}
+          />
+        )}
       />
       <TouchableOpacity
         style={{ borderRadius: 9, backgroundColor: "#0F3B64" }}

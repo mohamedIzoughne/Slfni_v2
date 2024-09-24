@@ -31,8 +31,8 @@ const useHttp = () => {
         })
 
         const data = await response.json()
+        console.log("--------", data)
 
-        console.log(data.message)
         if (response.ok) {
           if (onSuccess) onSuccess(data)
         } else {

@@ -64,7 +64,9 @@ export default function Signup({ navigation }) {
   const handleSignupSubmission = async () => {
     const submissionData = {
       ...formData,
-      username: formData.name ? formData.name.split(" ").join("") : "",
+      username: formData.name
+        ? formData.name.toLowerCase().split(" ").join("")
+        : "",
     }
 
     await sendData(

@@ -75,12 +75,6 @@ export default function Dashboard({ navigation }) {
     >
       {/* Header */}
       <View className="relative  flex-row justify-between items-center mt-8 mb-5">
-        <TouchableOpacity onPress={showPopUp}>
-          <Image
-            source={require("../../assets/koro.png")}
-            className="w-12 h-12 rounded-full"
-          />
-        </TouchableOpacity>
         <View className="relative">
           <TouchableOpacity onPress={() => navigation.navigate("notification")}>
             <Ionicons

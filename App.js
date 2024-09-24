@@ -11,7 +11,7 @@ import PasswordRetrieve from "./app/screens/authentication/PasswordRetrieve"
 import EmailVerification from "./app/screens/authentication/EmailVerification"
 import OnboardingScreen from "./app/screens/landing/onBoardingScreen"
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs"
-import AddFriend from "./app/screens/AddFriend"
+import SelectUser from "./app/screens/SelectUser"
 import Icon from "react-native-vector-icons/FontAwesome"
 import Setting from "./app/screens/Setting"
 import ProfileSetup from "./app/screens/authentication/profileSetup"
@@ -23,6 +23,7 @@ import { AppProvider } from "./app/store/index"
 import Oauth from "./app/screens/authentication/Oauth"
 import Loans from "./app/screens/loans/index"
 import UserLoanActivity from "./app/screens/loans/UserLoanActivity"
+import CreateLoan from "./app/screens/loans/CreateLoan"
 
 function Tabs() {
   const Tab = createBottomTabNavigator()
@@ -48,9 +49,9 @@ function Tabs() {
           ),
         }}
       />
-      <Tab.Screen
-        name="AddFriend"
-        component={AddFriend}
+      {/* <Tab.Screen
+        name="SelectUser"
+        component={SelectUser}
         options={{
           headerShown: false,
           tabBarIcon: ({ color, size, focused }) => (
@@ -71,7 +72,7 @@ function Tabs() {
             <Icon name="bar-chart" size={size} color={color} />
           ),
         }}
-      />
+      /> */}
       <Tab.Screen
         name="Settings"
         component={Setting}
@@ -126,13 +127,13 @@ export default function App() {
               component={EmailVerification}
             />
             {/* <Stack.Screen name="onBoarding" component={OnboardingScreen} /> */}
-            <Stack.Screen name="AddFriend" component={AddFriend} />
-            <Stack.Screen name="Home" component={Home} />
+            <Stack.Screen name="SelectUser" component={SelectUser} />
             <Stack.Screen name="profileSetup" component={ProfileSetup} />
             <Stack.Screen name="notification" component={Notifications} />
             <Stack.Screen name="Oauth" component={Oauth} />
             <Stack.Screen name="Loans" component={Loans} />
             <Stack.Screen name="UserActivity" component={UserLoanActivity} />
+            <Stack.Screen name="CreateLoan" component={CreateLoan} />
             <Stack.Screen name="Tabs" component={Tabs} />
           </Stack.Navigator>
         </NavigationContainer>

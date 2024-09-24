@@ -18,11 +18,21 @@ import { useState } from "react"
 import useHttp from "../hooks/useHttp"
 import { Context } from "../store"
 
-const Friend = ({ item, onAdd, onRemove }) => {
+const Friend = ({ item, navigation, loanStatus }) => {
   const Crow = require("../../assets/59679082.png")
 
   return (
-    <View className="flex-row items-center mt-4  ">
+    <TouchableOpacity
+      className="flex-row items-center mt-4"
+      onPress={() => {
+        navigation.navigate("CreateLoan", {
+          userId: item.id,
+          name: item.name,
+          loanStatus: loanStatus,
+          username: item.username,
+        })
+      }}
+    >
       <View className="border border-primary rounded-lg ml-4 p-1">
         <Image source={Crow} className="w-[76px] h-[60px] rounded-xl  " />
       </View>
@@ -31,34 +41,17 @@ const Friend = ({ item, onAdd, onRemove }) => {
           <Text className="text-2xl rounded-lg  ">{item.name}</Text>
           <Text className="text-gray-400  rounded-lg">{item.username}</Text>
         </View>
-        <TouchableOpacity
-          className="p-4"
-          onPress={item.isFriend ? onRemove : onAdd}
-        >
-          {item.isFriend ? (
-            <Icon6 name="user-check" size={15} color="#2F5B84" />
-          ) : (
-            <Icon6 name="user-plus" size={15} color="#2F5B84" />
-          )}
-          {/* {item.isFriend ? (
-            <Ionicons name="checkmark-sharp" size={17} color="#2F5B84" />
-          ) : (
-            <Icon6 name="plus" size={17} color="#2F5B84" />
-          )} */}
-          {/* <Icon6 name="plus" size={24} color="#37C8C3" />
-          <Icon6 name="checkmark-outline" size={24} color="#37C8C3" /> */}
-        </TouchableOpacity>
       </View>
-    </View>
+    </TouchableOpacity>
   )
 }
 
-export default function AddFriend({ navigation }) {
+export default function AddFriend({ navigation, route }) {
   const [searchedUsers, setSearchedUsers] = useState([])
   const [searchInput, setSearchInput] = useState("")
   const { userConfiguration } = useContext(Context)
   const { sendData, isLoading } = useHttp()
-
+  const { loanStatus } = route.params
   const submitHandler = () => {
     if (searchInput.length < 4) {
       Alert.alert(
@@ -83,58 +76,6 @@ export default function AddFriend({ navigation }) {
       }
     )
     console.log(searchInput)
-  }
-
-  const addFriend = (id) => {
-    sendData(
-      `/friendship/add/${id}`,
-      {
-        method: "POST",
-        headers: {
-          authorization: `Bearer ${userConfiguration.accessToken}`,
-        },
-      },
-      (data) => {
-        setSearchedUsers((prevUsers) => {
-          return prevUsers.map((user) => {
-            if (user.id === id) {
-              return { ...user, isFriend: true }
-            }
-            return user
-          })
-        })
-        console.log(data)
-      },
-      (err) => {
-        Alert.alert("Adding friend friend", err, [{ text: "OK" }])
-      }
-    )
-  }
-
-  const removeFriend = (id) => {
-    sendData(
-      `/friendship/remove/${id}`,
-      {
-        method: "DELETE",
-        headers: {
-          authorization: `Bearer ${userConfiguration.accessToken}`,
-        },
-      },
-      (data) => {
-        setSearchedUsers((prevUsers) => {
-          return prevUsers.map((user) => {
-            if (user.id === id) {
-              return { ...user, isFriend: false }
-            }
-            return user
-          })
-        })
-        console.log(data)
-      },
-      (err) => {
-        Alert.alert("Removing friend failed", err, [{ text: "OK" }])
-      }
-    )
   }
 
   return (
@@ -183,8 +124,8 @@ export default function AddFriend({ navigation }) {
                 <Friend
                   key={item.id}
                   item={item}
-                  onAdd={() => addFriend(item.id)}
-                  onRemove={() => removeFriend(item.id)}
+                  loanStatus={loanStatus}
+                  navigation={navigation}
                 />
               )}
               keyExtractor={(item) => item.child}

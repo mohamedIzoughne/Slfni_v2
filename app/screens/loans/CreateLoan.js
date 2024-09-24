@@ -1,20 +1,63 @@
-import React, { useState } from "react"
+import React, { useContext, useState } from "react"
 import {
   View,
   Text,
   TextInput,
   TouchableOpacity,
   ScrollView,
+  Alert,
 } from "react-native"
 import IconEntypo from "react-native-vector-icons/Entypo"
+import Feather from "react-native-vector-icons/Feather"
+import useHttp from "../../hooks/useHttp"
+import { Context } from "../../store"
 
-const CreateLendingScreen = () => {
+const CreateLendingScreen = ({ route, navigation }) => {
   const [title, setTitle] = useState("")
   const [price, setPrice] = useState("")
   const [description, setDescription] = useState("")
+  const { name, userId, loanStatus, username } = route.params
+  const { sendData } = useHttp()
+  const { userConfiguration } = useContext(Context)
 
   const handleProceed = () => {
-    // Handle form submission
+    const borrowingData = {
+      title,
+      amount: parseFloat(price),
+      description,
+      lenderId: userId,
+    }
+
+    const lendingData = {
+      title,
+      amount: parseFloat(price),
+      description,
+      borrowerId: userId,
+    }
+
+    sendData(
+      `/loans/create-${loanStatus.toLowerCase()}`,
+      {
+        method: "POST",
+        body: JSON.stringify(
+          loanStatus === "Borrowing" ? borrowingData : lendingData
+        ),
+        headers: {
+          Authorization: `Bearer ${userConfiguration.accessToken}`,
+        },
+      },
+      (data) => {
+        navigation.navigate("UserActivity", {
+          friendId: userId,
+          name: name,
+          username: username,
+        })
+      },
+      (err) => {
+        Alert.alert("Error", err, [{ text: "OK" }])
+      }
+    )
+
     console.log({ title, price, description })
   }
 
@@ -29,7 +72,7 @@ const CreateLendingScreen = () => {
             <IconEntypo name="chevron-thin-left" size={15} color="#000" />
           </TouchableOpacity>
           <Text className=" text-white font-bold text-xl mr-auto">
-            Create Lending
+            Create {loanStatus}
           </Text>
         </View>
       </View>
@@ -39,7 +82,19 @@ const CreateLendingScreen = () => {
         <View className="p-4 space-y-4 gap-6">
           <View className="relative">
             <View className="bg-[#ffffffc0] p-4 rounded-md">
-              <Text className="">Mouad Ahtchaou</Text>
+              <TouchableOpacity
+                onPress={() =>
+                  navigation.navigate("SelectUser", { loanStatus })
+                }
+              >
+                <Text className="">{name ? name : "------------"}</Text>
+                <Feather
+                  className="absolute right-0 top-0"
+                  name="edit-2"
+                  size={18}
+                  color="#000"
+                />
+              </TouchableOpacity>
             </View>
             <Text
               // style={{ elevation: 2 }}
@@ -82,7 +137,7 @@ const CreateLendingScreen = () => {
           <View className="relative">
             <TextInput
               className="bg-[#ffffffc0] rounded-md p-3 pt-4 text-gray-700"
-              placeholder="enter a note/description(less than 250 characters)"
+              placeholder="Enter a note/description(less than 250 characters)"
               value={description}
               onChangeText={setDescription}
               placeholderTextColor={"#757575"}
