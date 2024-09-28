@@ -24,6 +24,8 @@ import Oauth from "./app/screens/authentication/Oauth"
 import Loans from "./app/screens/loans/index"
 import UserLoanActivity from "./app/screens/loans/UserLoanActivity"
 import CreateLoan from "./app/screens/loans/CreateLoan"
+import CreateEvent from "./app/screens/events/CreateEvent"
+import AddMembers from "./app/screens/events/AddMembers"
 
 function Tabs() {
   const Tab = createBottomTabNavigator()
@@ -134,6 +136,8 @@ export default function App() {
             <Stack.Screen name="Loans" component={Loans} />
             <Stack.Screen name="UserActivity" component={UserLoanActivity} />
             <Stack.Screen name="CreateLoan" component={CreateLoan} />
+            <Stack.Screen name="CreateEvent" component={CreateEvent} />
+            <Stack.Screen name="AddMembers" component={AddMembers} />
             <Stack.Screen name="Tabs" component={Tabs} />
           </Stack.Navigator>
         </NavigationContainer>

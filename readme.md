@@ -19,9 +19,10 @@ I don't know why when I create a lending/borrowing I don't get all the loans whe
 
 <!-- - remove notification button -->
 
-- fix the home
+<!-- - fix the home -->
 
-- events design: event details, create an event
+<!-- - events design: event details, create an event -->
+
 - link the front and back of design
 - settings
 - notifications: you should detect if there are new notifications or not

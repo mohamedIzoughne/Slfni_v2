@@ -15,6 +15,20 @@ import Vector from "../../assets/Home/Vector.svg"
 import useHttp from "../hooks/useHttp"
 import { Context } from "../store"
 
+const QuickActionButton = ({ text, onPress }) => {
+  return (
+    <TouchableOpacity
+      onPress={onPress}
+      className="bg-primary rounded-[30px] w-[32%] max-w-[110px] min-w-[90px] h-[110px] py-5 px-4 gap-2 "
+    >
+      <View className="rounded-md bg-background w-[35px] aspect-square justify-center items-center ">
+        <Hands2 color="#009EE0" width={30} />
+      </View>
+      <Text className="text-white font-semibold">{text}</Text>
+    </TouchableOpacity>
+  )
+}
+
 const Home = ({ navigation }) => {
   const profileimage = require("../../assets/koro.png")
   const [financialData, setFinancialData] = useState({
@@ -23,8 +37,6 @@ const Home = ({ navigation }) => {
     totalLoans: 0,
   })
   const [totalMembershipPrice, setTotalMembershipPrice] = useState()
-
-  console.log(financialData)
 
   const { sendData, isLoading } = useHttp()
   const { userConfiguration } = useContext(Context)
@@ -82,7 +94,7 @@ const Home = ({ navigation }) => {
         </Text>
         <View className="flex-row my-[15px]">
           <Text className="text-[#3C386B] text-4xl font-bold">
-            {financialData.totalLoans.toFixed(2)}{" "}
+            {financialData.totalLoans?.toFixed(2)}{" "}
           </Text>
           <Text className="text-[#777498] text-4xl font-bold">DH</Text>
         </View>
@@ -123,15 +135,15 @@ const Home = ({ navigation }) => {
               <Text className="text-[#777498] font-semibold">{action}</Text>
               {action === "Lend" ? (
                 <Text className="text-[#3C386B] text-xl font-bold">
-                  {financialData?.totalLendings.toFixed(2)} Dh
+                  {financialData?.totalLendings?.toFixed(2)} Dh
                 </Text>
               ) : action === "Borrow" ? (
                 <Text className="text-[#3C386B] text-xl font-bold">
-                  {financialData.totalBorrowings.toFixed(2)} Dh
+                  {financialData.totalBorrowings?.toFixed(2)} Dh
                 </Text>
               ) : (
                 <Text className="text-[#3C386B] text-xl font-bold">
-                  {totalMembershipPrice.toFixed(2)} Dh
+                  {totalMembershipPrice?.toFixed(2)} Dh
                 </Text>
               )}
             </View>
@@ -139,12 +151,46 @@ const Home = ({ navigation }) => {
         ))}
       </View>
 
-      <View className="mb-5">
+      <View className="mb-">
         <Text className="text-primary text-xl font-semibold mb-6">
           Loan Dashboard
         </Text>
-        <View className="flex-row justify-between flex-wrap">
-          <TouchableOpacity
+        <ScrollView
+          contentContainerStyle={{
+            flexDirection: "row",
+            justifyContent: "space-between",
+            flexWrap: "wrap",
+            gap: 2,
+          }}
+          // className="flex-row justify-between flex-wrap"
+        >
+          <QuickActionButton
+            text="Loans"
+            onPress={() => navigation.navigate("Loans")}
+          />
+          <QuickActionButton
+            text="Create lending"
+            onPress={() =>
+              navigation.navigate("CreateLoan", {
+                loanStatus: "Lending",
+              })
+            }
+          />
+          <QuickActionButton
+            text="Create borrowing"
+            navigationScreen="CreateLoan"
+            onPress={() =>
+              navigation.navigate("CreateLoan", {
+                loanStatus: "Borrowing",
+              })
+            }
+          />
+          <QuickActionButton
+            text="Create Event"
+            navigationScreen="CreateEvent"
+            onPress={() => navigation.navigate("CreateEvent")}
+          />
+          {/* <TouchableOpacity
             onPress={() => navigation.navigate("Loans")}
             className="bg-primary rounded-[30px] w-[110px] h-[110px] py-5 px-4 gap-2 "
           >
@@ -178,8 +224,8 @@ const Home = ({ navigation }) => {
               <Hands2 color="#009EE0" width={30} />
             </View>
             <Text className="text-white font-semibold">Create Borrowing</Text>
-          </TouchableOpacity>
-        </View>
+          </TouchableOpacity> */}
+        </ScrollView>
       </View>
     </SafeAreaView>
   )
