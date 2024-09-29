@@ -18,20 +18,15 @@ import { useState } from "react"
 import useHttp from "../../hooks/useHttp"
 import { Context } from "../../store"
 
-const Friend = ({ item, navigation, loanStatus }) => {
+const Friend = ({ item, navigation }) => {
   const Crow = require("../../../assets/59679082.png")
-
+  console.log(item)
   return (
     <TouchableOpacity
       className="flex-row items-center mt-4"
-      onPress={() => {
-        navigation.navigate("CreateLoan", {
-          userId: item.id,
-          name: item.name,
-          loanStatus: loanStatus,
-          username: item.username,
-        })
-      }}
+      // onPress={() => {
+
+      // }}
     >
       <View className="border border-primary rounded-lg ml-4 p-1">
         <Image source={Crow} className="w-[76px] h-[60px] rounded-xl  " />
@@ -41,6 +36,11 @@ const Friend = ({ item, navigation, loanStatus }) => {
           <Text className="text-2xl rounded-lg  ">{item.name}</Text>
           <Text className="text-gray-400  rounded-lg">{item.username}</Text>
         </View>
+      </View>
+      <View>
+        <TouchableOpacity className="size-3 border border-solid border-red-200">
+          <Text>Hello</Text>
+        </TouchableOpacity>
       </View>
     </TouchableOpacity>
   )
@@ -52,34 +52,37 @@ export default function AddFriend({ navigation, route }) {
   const { userConfiguration } = useContext(Context)
   const { sendData, isLoading } = useHttp()
   //   const { loanStatus } = route.params
-  //   const submitHandler = () => {
-  //     if (searchInput.length < 4) {
-  //       Alert.alert(
-  //         "Invalid Input",
-  //         "Please enter at least 4 characters to search for users.",
-  //         [{ text: "OK", onPress: () => console.log("OK Pressed") }]
-  //       )
-  //     }
+  console.log("---------- From add members")
+  const submitHandler = () => {
+    console.log(searchInput)
+    if (searchInput.length < 4) {
+      Alert.alert(
+        "Invalid Input",
+        "Please enter at least 4 characters to search for users.",
+        [{ text: "OK", onPress: () => console.log("OK Pressed") }]
+      )
+    }
 
-  //     sendData(
-  //       `/friendship/search/${searchInput}`,
-  //       {
-  //         headers: {
-  //           authorization: `Bearer ${userConfiguration.accessToken}`,
-  //         },
-  //       },
-  //       (data) => {
-  //         setSearchedUsers(data.users)
-  //       },
-  //       (err) => {
-  //         console.log(err)
-  //       }
-  //     )
-  //     console.log(searchInput)
-  //   }
+    sendData(
+      `/friendship/search/${searchInput}`,
+      {
+        headers: {
+          authorization: `Bearer ${userConfiguration.accessToken}`,
+        },
+      },
+      (data) => {
+        setSearchedUsers(data.users)
+      },
+      (err) => {
+        console.log(err)
+      }
+    )
+    console.log(searchInput)
+  }
 
-  const submitHandler = () => {}
+  // const submitHandler = () => {}
 
+  console.log("Hello")
   return (
     <SafeAreaView className="relative flex-1 bg-white ">
       <View className="flex-row justify-between items-center mt-20 mr-14 ml-4">
@@ -126,7 +129,7 @@ export default function AddFriend({ navigation, route }) {
                 <Friend
                   key={item.id}
                   item={item}
-                  loanStatus={loanStatus}
+                  // loanStatus={loanStatus}
                   navigation={navigation}
                 />
               )}

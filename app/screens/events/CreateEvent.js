@@ -153,9 +153,9 @@ const CreateEventScreen = ({ route, navigation }) => {
               <Text className="ml text-lg ">Mohamed Izourne</Text>
             </View>
             <TouchableOpacity
-              className="ml-4 mt-4 flex-row items-center bg-red-200"
+              className="ml-4 mt-4 flex-row items-center bg-blue-900"
               onPress={() => {
-                console.log("------")
+                console.log("----")
                 navigation.navigate("AddMembers")
               }}
             >
