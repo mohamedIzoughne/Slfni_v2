@@ -11,12 +11,12 @@ import IconEntypo from "react-native-vector-icons/Entypo"
 import Feather from "react-native-vector-icons/Feather"
 import useHttp from "../../hooks/useHttp"
 import { Context } from "../../store"
+import AddUserIcon from "../../../assets/addUser.svg"
 
-const CreateLoanScreen = ({ route, navigation }) => {
+const CreateEventScreen = ({ route, navigation }) => {
   const [title, setTitle] = useState("")
   const [price, setPrice] = useState("")
   const [description, setDescription] = useState("")
-  const { name, userId, loanStatus, username } = route.params
   const { sendData } = useHttp()
   const { userConfiguration } = useContext(Context)
 
@@ -72,7 +72,7 @@ const CreateLoanScreen = ({ route, navigation }) => {
             <IconEntypo name="chevron-thin-left" size={15} color="#000" />
           </TouchableOpacity>
           <Text className=" text-white font-bold text-xl mr-auto">
-            Create {loanStatus}
+            Create Event
           </Text>
         </View>
       </View>
@@ -80,29 +80,17 @@ const CreateLoanScreen = ({ route, navigation }) => {
       <ScrollView className="flex-1 px-4 pt-4 ">
         {/* Form */}
         <View className="p-4 space-y-4 gap-6">
-          <View className="relative">
+          {/* <View className="relative">
             <View className="bg-[#ffffffc0] p-4 rounded-md">
-              <TouchableOpacity
-                onPress={() =>
-                  navigation.navigate("SelectUser", { loanStatus })
-                }
-              >
-                <Text className="">{name ? name : "------------"}</Text>
-                <Feather
-                  className="absolute right-0 top-0"
-                  name="edit-2"
-                  size={18}
-                  color="#000"
-                />
-              </TouchableOpacity>
+              <Text className="">{userConfiguration.name}</Text>
             </View>
             <Text
               // style={{ elevation: 2 }}
               className="text-primary absolute top-0 text-xs w-[50px] rounded-full pl-3 flex-grow-0 -mt-2 ml-2 bg-white"
             >
-              Lender
+              Admin
             </Text>
-          </View>
+          </View> */}
 
           <View className="relative">
             <TextInput
@@ -114,7 +102,7 @@ const CreateLoanScreen = ({ route, navigation }) => {
             />
             <Text
               // style={{ elevation: 2 }}
-              className="text-primary absolute top-0 text-xs w-[50px] rounded-full pl-3 flex-grow-0 -mt-2 ml-2 bg-white"
+              className="text-primary absolute top-0 text-sm w-[50px] rounded-full pl-3 flex-grow-0 -mt-2 ml-2 bg-white"
             >
               Title
             </Text>
@@ -129,7 +117,7 @@ const CreateLoanScreen = ({ route, navigation }) => {
               onChangeText={setPrice}
               keyboardType="numeric"
             />
-            <Text className="text-primary absolute top-0 text-xs w-[50] rounded-full pl-3 flex-grow-0 -mt-2 ml-2 bg-white">
+            <Text className="text-primary absolute top-0 text-sm w-[50] rounded-full pl-3 flex-grow-0 -mt-2 ml-2 bg-white">
               Price
             </Text>
           </View>
@@ -153,6 +141,28 @@ const CreateLoanScreen = ({ route, navigation }) => {
               Description
             </Text>
           </View>
+
+          <ScrollView>
+            <Text
+              // style={{ elevation: 2 }}
+              className="text-primary  text-sm w-[80px] pl-3  ml-2 "
+            >
+              Members
+            </Text>
+            <View className="ml-5">
+              <Text className="ml text-lg ">Mohamed Izourne</Text>
+            </View>
+            <TouchableOpacity
+              className="ml-4 mt-4 flex-row items-center bg-blue-900"
+              onPress={() => {
+                console.log("----")
+                navigation.navigate("AddMembers")
+              }}
+            >
+              <AddUserIcon color="#009EE0" width={30} />
+              <Text className="ml text-lg text-[#003566]">Add member</Text>
+            </TouchableOpacity>
+          </ScrollView>
         </View>
       </ScrollView>
 
@@ -169,4 +179,4 @@ const CreateLoanScreen = ({ route, navigation }) => {
   )
 }
 
-export default CreateLoanScreen
+export default CreateEventScreen
