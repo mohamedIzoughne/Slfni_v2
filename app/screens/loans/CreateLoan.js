@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react"
+import React, { useContext, useEffect, useState } from "react"
 import {
   View,
   Text,
@@ -11,6 +11,7 @@ import IconEntypo from "react-native-vector-icons/Entypo"
 import Feather from "react-native-vector-icons/Feather"
 import useHttp from "../../hooks/useHttp"
 import { Context } from "../../store"
+import { useColorScheme } from "react-native"
 
 const CreateLoanScreen = ({ route, navigation }) => {
   const [title, setTitle] = useState("")
@@ -19,6 +20,8 @@ const CreateLoanScreen = ({ route, navigation }) => {
   const { name, userId, loanStatus, username } = route.params
   const { sendData } = useHttp()
   const { userConfiguration } = useContext(Context)
+  const colorScheme = useColorScheme()
+  const isDarkMode = colorScheme === "dark"
 
   const handleProceed = () => {
     const borrowingData = {
@@ -62,11 +65,11 @@ const CreateLoanScreen = ({ route, navigation }) => {
   }
 
   return (
-    <View className="flex-1 bg-background-light">
+    <View className="flex-1 bg-background dark:bg-background-dark">
       <View className="bg-primary px-4 pt-8">
         <View className="flex-row items-center mb-6">
           <TouchableOpacity
-            className="bg-background-light size-[26px] justify-center items-center rounded-full mr-auto"
+            className="bg-background size-[26px] justify-center items-center rounded-full mr-auto"
             onPress={() => navigation.navigate("Home")}
           >
             <IconEntypo name="chevron-thin-left" size={15} color="#000" />
@@ -81,8 +84,9 @@ const CreateLoanScreen = ({ route, navigation }) => {
         {/* Form */}
         <View className="p-4 space-y-4 gap-6">
           <View className="relative">
-            <View className="bg-[#ffffffc0] p-4 rounded-md">
+            <View className="bg-[#ffffffc0] dark:bg-background rounded-md">
               <TouchableOpacity
+                className="p-4"
                 onPress={() =>
                   navigation.navigate("SelectUser", { loanStatus })
                 }
@@ -92,13 +96,13 @@ const CreateLoanScreen = ({ route, navigation }) => {
                   className="absolute right-0 top-0"
                   name="edit-2"
                   size={18}
-                  color="#000"
+                  color={isDarkMode ? "#212121" : "#000"}
                 />
               </TouchableOpacity>
             </View>
             <Text
               // style={{ elevation: 2 }}
-              className="text-primary absolute top-0 text-xs w-[50px] rounded-full pl-3 flex-grow-0 -mt-2 ml-2 bg-white"
+              className="text-primary absolute top-0 text-xs w-[50px] rounded-full pl-3 flex-grow-0 -mt-2 ml-2 bg-white dark:bg-background"
             >
               Lender
             </Text>
@@ -106,7 +110,7 @@ const CreateLoanScreen = ({ route, navigation }) => {
 
           <View className="relative">
             <TextInput
-              className="bg-[#ffffffc0] rounded-md p-3   text-gray-700"
+              className="bg-[#ffffffc0] dark:bg-background rounded-md p-3   text-gray-700"
               placeholder="Enter title"
               placeholderTextColor={"#757575"}
               value={title}
@@ -114,7 +118,7 @@ const CreateLoanScreen = ({ route, navigation }) => {
             />
             <Text
               // style={{ elevation: 2 }}
-              className="text-primary absolute top-0 text-xs w-[50px] rounded-full pl-3 flex-grow-0 -mt-2 ml-2 bg-white"
+              className="text-primary absolute top-0 text-xs w-[50px] rounded-full pl-3 flex-grow-0 -mt-2 ml-2 bg-white dark:bg-background"
             >
               Title
             </Text>
@@ -122,21 +126,21 @@ const CreateLoanScreen = ({ route, navigation }) => {
 
           <View className="relative">
             <TextInput
-              className="bg-[#ffffffc0] rounded-md p-3 text-gray-700"
+              className="bg-[#ffffffc0] dark:bg-background rounded-md p-3 text-gray-700"
               placeholder="Enter price (e.g 25Dh)"
               value={price}
               placeholderTextColor={"#757575"}
               onChangeText={setPrice}
               keyboardType="numeric"
             />
-            <Text className="text-primary absolute top-0 text-xs w-[50] rounded-full pl-3 flex-grow-0 -mt-2 ml-2 bg-white">
+            <Text className="text-primary absolute top-0 text-xs w-[50] rounded-full pl-3 flex-grow-0 -mt-2 ml-2 bg-white dark:bg-background">
               Price
             </Text>
           </View>
 
           <View className="relative">
             <TextInput
-              className="bg-[#ffffffc0] rounded-md p-3 pt-4 text-gray-700"
+              className="bg-[#ffffffc0] dark:bg-background rounded-md p-3 pt-4 text-gray-700"
               placeholder="Enter a note/description(less than 250 characters)"
               value={description}
               onChangeText={setDescription}
@@ -148,7 +152,7 @@ const CreateLoanScreen = ({ route, navigation }) => {
             />
             <Text
               // style={{ elevation: 2 }}
-              className="text-primary absolute top-0 text-xs w-[80px] rounded-full pl-3 flex-grow-0 -mt-2 ml-2 bg-white"
+              className="text-primary absolute top-0 text-xs w-[80px] rounded-full pl-3 flex-grow-0 -mt-2 ml-2 bg-white dark:bg-background"
             >
               Description
             </Text>

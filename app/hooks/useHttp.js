@@ -12,12 +12,13 @@ const useHttp = () => {
 
       try {
         const url = `${process.env.EXPO_PUBLIC_SERVER_API || ""}${endpoint}`
-        console.log("0-", url)
         // Merge default headers and any custom headers provided in options
         const headers = {
-          "Content-Type": "application/json",
+          // "Content-Type": "application/json",
           ...(options.headers || {}),
         }
+
+        console.log("Headers:", headers)
 
         // console.log(url, {
         //   method: options.method || "GET", // Default to GET if no method provided
@@ -36,10 +37,12 @@ const useHttp = () => {
         if (response.ok) {
           if (onSuccess) onSuccess(data)
         } else {
-          // console.log(data)
-          // if (data.errors) {
-          // console.log(data)
-          const error = data.message || "Request failed"
+          const error = data.message
+            ? data.message
+            : data.errors?.length > 0
+            ? data.errors[0].msg
+            : "An error occurred"
+
           throw new Error(error)
         }
       } catch (err) {

@@ -6,18 +6,10 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        background:"#F5F5F5",
+        background: "#F5F5F5",
         primary: "#2F5B84",
-        "primary-dark": "#8879B9",
-        secondary: "#9AD4D6",
-        "secondary-dark": "#296365",
-        accent: "#101937",
-        "accent-dark": "#C8D1EF",
-        light: "#F0FDFF",
-        dark: "#000D0F",
-        text: "#040316",
-        "text-dark": "#EAE9FC",
-        "background-light": "#F5F5F5",
+        "focused-primary": "#103557",
+        "background-dark": "#212121",
       },
     },
   },

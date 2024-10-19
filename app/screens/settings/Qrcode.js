@@ -1,17 +1,31 @@
 import React, { useContext } from "react"
-import { View, Text, Pressable, Dimensions } from "react-native"
+import {
+  View,
+  Text,
+  Pressable,
+  Dimensions,
+  TouchableOpacity,
+} from "react-native"
 import { Ionicons } from "@expo/vector-icons"
 import QRCode from "react-native-qrcode-svg"
 import { Context } from "../../store"
+import { useColorScheme } from "react-native"
 
-export default function Qrcode({ setbar }) {
+export default function Qrcode({ setBar }) {
   const { userConfiguration } = useContext(Context)
+  const colorScheme = useColorScheme()
+  const isDarkMode = colorScheme === "dark"
+
   return (
-    <View className="flex-1 bg-white p-4">
+    <View className="flex-1 p-4">
       <View className="">
-        <Pressable onPress={() => setbar("")} className="mb-6">
-          <Ionicons name="arrow-back" size={24} color="black" />
-        </Pressable>
+        <TouchableOpacity onPress={() => setBar("")} className="mb-3 pr-3 py-3">
+          <Ionicons
+            name="arrow-back"
+            size={24}
+            color={isDarkMode ? "#F5F5F5" : "black"}
+          />
+        </TouchableOpacity>
       </View>
       <View className="flex-1 justify-center items-center">
         <QRCode

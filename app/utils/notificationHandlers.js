@@ -7,7 +7,8 @@ export const getNotificationsApiOptions = (
   eventId = "",
   senderId = ""
 ) => {
-  console.log(senderId)
+  console.log("------- the eventid", eventId)
+
   const options = {
     lendingInitiated: {
       accept: [
@@ -55,6 +56,7 @@ export const getNotificationsApiOptions = (
       accept: [
         `/events/accept-event/${eventId}`,
         {
+          method: "POST",
           body: JSON.stringify({ notificationId }),
           headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -62,8 +64,9 @@ export const getNotificationsApiOptions = (
         },
       ],
       refuse: [
-        `/events/accept-event/${eventId}`,
+        `/events/refuse-event/${eventId}`,
         {
+          method: "POST",
           body: JSON.stringify({ notificationId }),
           headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -71,10 +74,12 @@ export const getNotificationsApiOptions = (
         },
       ],
     },
+    // not checked yet:
     userPaidEvent: {
       accept: [
-        "/events/accept-paid-event",
+        `/events/accept-event-as-paid/${eventId}`,
         {
+          method: "PUT",
           body: JSON.stringify({ notificationId }),
           headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -82,8 +87,9 @@ export const getNotificationsApiOptions = (
         },
       ],
       refuse: [
-        "/events/refuse-paid-event",
+        `/events/refuse-event-as-paid/${eventId}`,
         {
+          method: "PUT",
           body: JSON.stringify({ notificationId }),
           headers: {
             Authorization: `Bearer ${accessToken}`,

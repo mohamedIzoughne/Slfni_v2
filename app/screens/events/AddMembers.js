@@ -1,4 +1,4 @@
-import React, { useContext, useRef } from "react"
+import React, { useCallback, useContext, useRef } from "react"
 import {
   View,
   Text,
@@ -10,52 +10,75 @@ import {
   FlatList,
   Alert,
   ActivityIndicator,
+  DeviceEventEmitter,
+  BackHandler,
 } from "react-native"
-import { Ionicons } from "@expo/vector-icons"
+import { useFocusEffect } from "@react-navigation/native"
 import Icon from "react-native-vector-icons/FontAwesome"
 import Icon6 from "react-native-vector-icons/FontAwesome6"
 import { useState } from "react"
 import useHttp from "../../hooks/useHttp"
 import { Context } from "../../store"
 
-const Friend = ({ item, navigation }) => {
-  const Crow = require("../../../assets/59679082.png")
-  console.log(item)
-  return (
-    <TouchableOpacity
-      className="flex-row items-center mt-4"
-      // onPress={() => {
+const Member = ({ item, onAdd, members, onRemove }) => {
+  const memberIsAdded =
+    members.findIndex((member) => member.id === item.id) !== -1
 
-      // }}
-    >
-      <View className="border border-primary rounded-lg ml-4 p-1">
-        <Image source={Crow} className="w-[76px] h-[60px] rounded-xl  " />
+  const handlePress = useCallback(() => {
+    if (!memberIsAdded) {
+      onAdd({ id: item.id, name: item.name })
+    } else {
+      onRemove(item.id)
+    }
+  })
+
+  return (
+    <View className="flex-row items-center bg-background-light px-4 py-4">
+      <View
+        style={{ borderRadius: 16 }}
+        className="bg-primary dark:bg-background mr-4 p-2 rounded-[16px]"
+      >
+        <Image
+          source={require("../../../assets/person.png")}
+          className="w-12 h-12 rounded-full "
+        />
       </View>
-      <View className="flex-row items-center justify-between flex-grow mx-4 border border-t-0 border-r-0 border-l-0 border-gray-300 ">
-        <View className="h-24  justify-center ">
-          <Text className="text-2xl rounded-lg  ">{item.name}</Text>
-          <Text className="text-gray-400  rounded-lg">{item.username}</Text>
-        </View>
+      <View className="flex-1">
+        <Text className="font-bold text-[#003566] dark:text-background text-sm ">
+          {item.name}
+        </Text>
+        <Text className="text-gray-600 dark:text-gray-400">
+          @{item.username}
+        </Text>
       </View>
-      <View>
-        <TouchableOpacity className="size-3 border border-solid border-red-200">
-          <Text>Hello</Text>
-        </TouchableOpacity>
-      </View>
-    </TouchableOpacity>
+      <TouchableOpacity className="p-2" onPress={handlePress}>
+        <Text className="text-primary dark:text-white text-right text-sm font-medium">
+          {memberIsAdded ? "Added" : "Add"}
+        </Text>
+      </TouchableOpacity>
+    </View>
   )
 }
 
-export default function AddFriend({ navigation, route }) {
+export default function AddMembers({ navigation, route }) {
   const [searchedUsers, setSearchedUsers] = useState([])
   const [searchInput, setSearchInput] = useState("")
   const { userConfiguration } = useContext(Context)
   const { sendData, isLoading } = useHttp()
-  //   const { loanStatus } = route.params
-  console.log("---------- From add members")
-  const submitHandler = () => {
-    console.log(searchInput)
-    if (searchInput.length < 4) {
+  const { initialMembers = [], scannedData } = route.params
+
+  // you remove it there yes but you don't remove it there, the sol: is to make a state for all members
+
+  // here there is a problem, because when we delete a member from the list, the list is not updated.
+  // especially when we go back to the previous screen, the list is not updated.
+  const [newAddedMembers, setNewAddedMembers] = useState([...initialMembers])
+
+  // remove it after going back
+  // add it after going back
+  const allMembers = [...newAddedMembers]
+
+  const submitHandler = (scanned) => {
+    if (scanned && scanned.length < 4 && searchInput.length < 4) {
       Alert.alert(
         "Invalid Input",
         "Please enter at least 4 characters to search for users.",
@@ -64,7 +87,7 @@ export default function AddFriend({ navigation, route }) {
     }
 
     sendData(
-      `/friendship/search/${searchInput}`,
+      `/friendship/search/${scanned || searchInput}`,
       {
         headers: {
           authorization: `Bearer ${userConfiguration.accessToken}`,
@@ -80,11 +103,29 @@ export default function AddFriend({ navigation, route }) {
     console.log(searchInput)
   }
 
-  // const submitHandler = () => {}
+  const addMemberHandler = (newMember) => {
+    DeviceEventEmitter.emit("onAddMember", newMember)
+    setNewAddedMembers((prev) => [...prev, newMember])
+  }
 
-  console.log("Hello")
+  const removeMemberHandler = (id) => {
+    DeviceEventEmitter.emit("onRemoveMember", id)
+    setNewAddedMembers((prev) => {
+      return prev.filter((member) => member.id !== id)
+    })
+  }
+
+  useFocusEffect(
+    React.useCallback(() => {
+      if (scannedData) {
+        setSearchInput(scannedData)
+        submitHandler(scannedData)
+      }
+    }, [scannedData])
+  )
+
   return (
-    <SafeAreaView className="relative flex-1 bg-white ">
+    <SafeAreaView className="relative flex-1 bg-background dark:bg-background-dark">
       <View className="flex-row justify-between items-center mt-20 mr-14 ml-4">
         <View className="flex-row items-center bg-slate-100 rounded-lg px-4 py-1 flex-grow mr-2">
           <TextInput
@@ -96,18 +137,25 @@ export default function AddFriend({ navigation, route }) {
             onSubmitEditing={submitHandler}
             returnKeyType="search"
           />
-          <Icon
-            name="search"
-            size={24}
-            color="black"
+          <TouchableOpacity
+            onPress={submitHandler}
             style={{ position: "absolute", right: 12 }}
-          />
+          >
+            <Icon name="search" size={24} color="black" />
+          </TouchableOpacity>
         </View>
-        <TouchableOpacity className="bg-primary p-3 rounded-lg">
+        <TouchableOpacity
+          onPress={() =>
+            navigation.navigate("Scanner", {
+              initialMembers: newAddedMembers,
+            })
+          }
+          className="bg-primary p-3 rounded-lg"
+        >
           <Icon6 name="qrcode" size={24} color="white" />
         </TouchableOpacity>
       </View>
-      <View className="mt-6 bg-slate-50 px-4 py-2  border border-r-0 border-b-0 border-l-0 border-slate-200 h-full">
+      <View className="mt-6  px-4 py-2  border border-r-0 border-b-0 border-l-0 border-slate-200 dark:border-gray-700 h-full">
         {isLoading ? (
           <ActivityIndicator className="mt-28" size="large" color="#554686" />
         ) : searchedUsers.length === 0 ? (
@@ -120,20 +168,22 @@ export default function AddFriend({ navigation, route }) {
           <>
             <View className="flex-row items-center rounded-lg px-4 py-1  mr-2">
               <Text className="text-base text-gray-400  rounded-lg py-2 pr-8">
-                Choose your friend
+                Choose new member
               </Text>
             </View>
+
             <FlatList
               data={searchedUsers}
               renderItem={({ item }) => (
-                <Friend
-                  key={item.id}
+                <Member
                   item={item}
-                  // loanStatus={loanStatus}
+                  onAdd={addMemberHandler}
+                  onRemove={removeMemberHandler}
+                  members={allMembers}
                   navigation={navigation}
                 />
               )}
-              keyExtractor={(item) => item.child}
+              keyExtractor={(item) => item.id}
             />
           </>
         )}

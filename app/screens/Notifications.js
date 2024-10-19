@@ -8,6 +8,7 @@ import {
   Image,
   Pressable,
   StyleSheet,
+  ToastAndroid,
   Alert,
 } from "react-native"
 import { styled } from "nativewind"
@@ -16,7 +17,7 @@ import IconEntypo from "react-native-vector-icons/Entypo"
 import SimpleLineIcons from "react-native-vector-icons/SimpleLineIcons"
 import Ionicons from "react-native-vector-icons/Ionicons"
 import useHttp from "../hooks/useHttp"
-import { useContext, useEffect, useState } from "react"
+import { useContext, useEffect, useState, useCallback } from "react"
 import { Context } from "../store/index"
 import {
   getNotificationsApiOptions,
@@ -24,10 +25,16 @@ import {
 } from "../utils/notificationHandlers"
 import { formatRelativeTime } from "../utils"
 
-const DeleteNotificationButton = ({ notificationId, setNotifications }) => {
+const filterConditions = {
+  All: () => true,
+  Loans: (notification) => notification.contextType === "loan",
+  Events: (notification) => notification.contextType === "event",
+}
+
+const DeleteNotificationButton = ({ notificationId, isSeen }) => {
   const [isShowed, setIsShowed] = useState(false)
   const { sendData } = useHttp()
-  const { userConfiguration } = useContext(Context)
+  const { userConfiguration, notificationFilterHandler } = useContext(Context)
 
   const isShowedHandler = () => {
     setIsShowed((prev) => !prev)
@@ -43,8 +50,7 @@ const DeleteNotificationButton = ({ notificationId, setNotifications }) => {
         },
       },
       (data) => {
-        console.log()
-        setNotifications((prev) => prev.filter((n) => n.id !== notificationId))
+        notificationFilterHandler(notificationId, isSeen)
       },
       (err) => {
         Alert.alert("Error", err, [{ text: "OK" }])
@@ -82,7 +88,7 @@ const DeleteNotificationButton = ({ notificationId, setNotifications }) => {
   )
 }
 
-const NotificationItem = ({ item, setNotifications }) => {
+const NotificationItem = ({ item }) => {
   // actually not all of them it's just 4 I guess
 
   return (
@@ -118,35 +124,34 @@ const NotificationItem = ({ item, setNotifications }) => {
           </Text>
         </View>
         <DeleteNotificationButton
+          isSeen={item.isSeen}
           notificationId={item.id}
-          setNotifications={setNotifications}
         />
       </View>
     </View>
   )
 }
 
-const WithOpinionNotification = ({ item, accessToken, setNotifications }) => {
+const WithOpinionNotification = ({ item, accessToken }) => {
   // actually not all of them it's just 4 I guess
   const { sendData, isLoading } = useHttp()
+  const { notificationFilterHandler } = useContext(Context)
 
-  const acceptHandler = () => {
+  const acceptHandler = useCallback(() => {
     sendData(
       ...getNotificationsApiOptions(
         accessToken,
         item.type,
         item.id,
         item.loanId,
-        null,
+        item.eventId,
         item.senderId
       ).accept,
-      () => {
-        setNotifications((prev) => {
-          const filteredNotifications = prev.filter((notification) => {
-            return notification.id !== item.id
-          })
-          return filteredNotifications
-        })
+      (data) => {
+        notificationFilterHandler(item.id, item.isSeen) // I think data should already have those notifications no ?
+        if (data.message) {
+          ToastAndroid.show(data.message, ToastAndroid.SHORT)
+        }
       },
       (err) => {
         Alert.alert("Invalid Input", err, [
@@ -154,33 +159,29 @@ const WithOpinionNotification = ({ item, accessToken, setNotifications }) => {
         ])
       }
     )
-  }
+  }, [item])
 
-  const declineHandler = () => {
+  const declineHandler = useCallback(() => {
     sendData(
       ...getNotificationsApiOptions(
         accessToken,
         item.type,
         item.id,
-        null,
-        null,
+        item.loanId,
+        item.eventId,
         item.senderId
       ).refuse,
       (data) => {
-        console.log("success")
-        setNotifications((prev) => {
-          const filteredNotifications = prev.filter((notification) => {
-            return notification.id !== item.id
-          })
-          return filteredNotifications
-        })
+        notificationFilterHandler(item.id, item.isSeen) // I think data should already have those notifications no ?
+        if (data.message) {
+          ToastAndroid.show(data.message, ToastAndroid.SHORT)
+        }
       },
       (err) => {
         Alert.alert("Error", err, [{ text: "OK" }])
-        console.log(err)
       }
     )
-  }
+  }, [item])
 
   return (
     <View className="text-[#5A5A5A] p-6 pb-7  rounded-lg flex-row items-start border-b border-solid border-[#6999c6] border-opacity-70">
@@ -236,41 +237,30 @@ let fixedNotifications = []
 const NotificationsScreen = ({ navigation }) => {
   const { sendData, isLoading } = useHttp()
   const { userConfiguration } = useContext(Context)
-  const [notifications, setNotifications] = useState([])
   const [notificationType, setNotificationType] = useState("All")
-  const [unSeenCount, setUnSeenCount] = useState(0)
+  const { notificationsData, notificationsHandler } = useContext(Context)
+  const [showedNotifications, setShowedNotifications] = useState([])
+
   useEffect(() => {
-    sendData(
-      "/notifications",
-      {
-        headers: {
-          authorization: `Bearer ${userConfiguration.accessToken}`,
-        },
-      },
-      (data) => {
-        console.log(data)
-        setNotifications(data.notifications)
-        setUnSeenCount(data.unSeenCount)
-      },
-      (err) => {
-        console.log(err)
-      }
-    )
-  }, [])
-
-  const handleNotificationTypeChange = (type) => {
-    setNotificationType(type)
-    setNotifications((notifications) => {
-      let filteredNotifications = [...fixedNotifications]
-
-      const condition = {
-        All: () => true,
-        Loans: (notification) => notification.contextType === "loan",
-        Events: (notification) => notification.contextType === "event",
-      }
+    setShowedNotifications(() => {
+      let filteredNotifications = [...notificationsData.notifications]
 
       filteredNotifications = filteredNotifications.filter(
-        condition[type] || condition.All
+        filterConditions[notificationType] || filterConditions.All
+      )
+
+      return filteredNotifications
+    })
+    setShowedNotifications(notificationsData.notifications)
+  }, [notificationsData])
+
+  const notificationFilterHandler = (type) => {
+    setNotificationType(type)
+    setShowedNotifications(() => {
+      let filteredNotifications = [...notificationsData.notifications]
+
+      filteredNotifications = filteredNotifications.filter(
+        filterConditions[type] || filterConditions.All
       )
 
       return filteredNotifications
@@ -278,11 +268,11 @@ const NotificationsScreen = ({ navigation }) => {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-background-light">
+    <SafeAreaView className="flex-1 bg-background dark:bg-background-dark">
       <View className="bg-primary px-4 pt-8">
         <View className="flex-row items-center">
           <TouchableOpacity
-            className="bg-background-light size-[26px] justify-center items-center rounded-full"
+            className="bg-background size-[26px] justify-center items-center rounded-full"
             onPress={() => navigation.navigate("Home")}
           >
             <IconEntypo name="chevron-thin-left" size={15} color="#000" />
@@ -301,7 +291,7 @@ const NotificationsScreen = ({ navigation }) => {
                   : "border-transparent"
               } `}
               onPress={() => {
-                handleNotificationTypeChange(item)
+                notificationFilterHandler(item)
               }}
             >
               <Text
@@ -311,28 +301,30 @@ const NotificationsScreen = ({ navigation }) => {
               >
                 {item}
               </Text>
-              {unSeenCount > 0 && item === "All" && (
+              {notificationsData.unSeenCount > 0 && item === "All" && (
                 <View className="bg-[#64748B] bg-opacity-25 ml-2 size-[23px] rounded-full justify-center items-center">
-                  <Text className="text-xs text-[#E2E8F0]">{unSeenCount}</Text>
+                  <Text className="text-xs text-[#E2E8F0]">
+                    {notificationsData.unSeenCount}
+                  </Text>
                 </View>
               )}
             </Pressable>
           ))}
         </View>
       </View>
-      {notifications.length !== 0 ? (
+      {showedNotifications.length !== 0 ? (
         <FlatList
-          data={notifications}
+          data={showedNotifications}
           renderItem={({ item }) =>
             item.withOpinion ? (
               <WithOpinionNotification
-                setNotifications={setNotifications}
+                setNotifications={notificationsHandler}
                 accessToken={userConfiguration.accessToken}
                 item={item}
               />
             ) : (
               <NotificationItem
-                setNotifications={setNotifications}
+                setNotifications={notificationsHandler}
                 item={item}
               />
             )
@@ -343,9 +335,9 @@ const NotificationsScreen = ({ navigation }) => {
         <View className="flex-1 justify-start items-center mt-16">
           <Image
             source={require("../../assets/icons/no-notifications.png")}
-            style={{ width: 325, height: 325, marginBottom: 20 }}
+            style={{ width: 239.46, height: 340.28, marginBottom: 20 }}
           />
-          <Text className="text-4xl text-[#757575] mt-4">
+          <Text className="text-4xl text-gray-500 dark:text-gray-400 mt-4">
             Nothing New Here !
           </Text>
         </View>

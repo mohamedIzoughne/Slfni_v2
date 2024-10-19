@@ -38,8 +38,8 @@ export default function PasswordRetrieve({ navigation }) {
             className="mr-2 absolute left-2"
           />
           <TextInput
-            className="text-lg flex-1  border-2 focus:border-[#37C8C3] px-1 py-2 pl-10 rounded-md"
-            placeholder="ReyhanAji@gmail.com"
+            className="text-lg flex-1  border-2 border-gray-300 focus:border-primary px-1 py-2 pl-10 rounded-md"
+            placeholder="example@gmail.com"
             placeholderTextColor="#888"
             keyboardType="email-address"
           />
@@ -47,7 +47,7 @@ export default function PasswordRetrieve({ navigation }) {
       </View>
 
       <Pressable
-        className="bg-[#5D5FEF] rounded-lg py-4 items-center"
+        className="bg-primary rounded-lg py-4 items-center"
         onPress={() => navigation.navigate("EmailVerification")}
       >
         <Text className="text-white font-bold text-base">Submit</Text>

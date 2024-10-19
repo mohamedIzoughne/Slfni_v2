@@ -8,6 +8,7 @@ import {
   FlatList,
   Alert,
   ActivityIndicator,
+  ToastAndroid,
 } from "react-native"
 import IconEntypo from "react-native-vector-icons/Entypo"
 import Ionicons from "react-native-vector-icons/Ionicons"
@@ -125,7 +126,11 @@ const Options = ({ friendId, setIsSettled }) => {
         },
       },
       (data) => {
-        setIsSettled((prev) => !prev)
+        setIsSettled(true)
+        ToastAndroid.show(
+          "Settling down loans request sent successfully!",
+          ToastAndroid.SHORT
+        )
       },
       (err) => {
         Alert.alert("Error", err, [{ text: "OK" }])
@@ -204,13 +209,13 @@ const UserProfileTransactions = ({ route, navigation }) => {
   }, [])
 
   return (
-    <View className="flex-1 bg-background-light">
+    <View className="flex-1 bg-background dark:bg-background-dark">
       <View
         style={{ zIndex: 10 }}
         className="bg-primary px-4 py-5 flex-row items-center "
       >
         <TouchableOpacity
-          className="bg-background-light w-[26px] h-[26px] justify-center items-center rounded-full"
+          className="bg-background w-[26px] h-[26px] justify-center items-center rounded-full"
           onPress={() => navigation.goBack()}
         >
           <IconEntypo name="chevron-thin-left" size={15} color="#000" />
@@ -232,7 +237,7 @@ const UserProfileTransactions = ({ route, navigation }) => {
         {<Options setIsSettled={setIsSettled} friendId={friendId} />}
       </View>
       <View className="flex-row justify-between mx-6 mt-4">
-        <Text className="font-semibold text-lg text-[#003566] overline">
+        <Text className="font-semibold text-lg text-[#003566] dark:text-background overline">
           Total:
         </Text>
         <Text

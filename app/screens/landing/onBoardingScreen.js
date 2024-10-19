@@ -7,17 +7,22 @@ import {
   Dimensions,
   TouchableOpacity,
   Image,
+  useColorScheme,
 } from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context"
+import OnBoarding1SVG from "../../../assets/svgs/onBoarding1SVG.js"
+import OnBoarding2SVG from "../../../assets/svgs/onBoarding2SVG.js"
+import OnBoarding3SVG from "../../../assets/svgs/onBoarding3SVG.js"
 
 const { width } = Dimensions.get("window")
 
 const slides = [
   {
     id: "1",
-    title: "Let's start tracking our finances !",
-    description: "Say goodbye to financial misunderstandings with our app.",
-    image: require("../../../assets/onboarding/onboarding-1.png"),
+    title: "Gain Control Over Your Finances",
+    description:
+      "Track how much you spend on loans and payments, and manage your finances with ease.",
+    image: <OnBoarding1SVG />,
     imageStyles: {
       width: 280,
       height: 270,
@@ -25,9 +30,11 @@ const slides = [
   },
   {
     id: "2",
-    title: "Easy to Use",
-    description: "Navigate through our user-friendly interface with ease.",
-    image: require("../../../assets/onboarding/onboarding-2.png"),
+    title: "Stay Organized with Events",
+    description:
+      "Easily manage group events and shared expenses, keeping everyone on the same page.",
+    // image: require("../../../assets/onboarding/onboarding-2.png"),
+    image: <OnBoarding2SVG />,
     imageStyles: {
       width: 320,
       height: 320,
@@ -35,9 +42,11 @@ const slides = [
   },
   {
     id: "3",
-    title: "Get Started",
-    description: "Start your journey with us today!",
-    image: require("../../../assets/onboarding/onboarding-3.png"),
+    title: "Improve Communication with Friends",
+    description:
+      "Avoid misunderstandings by keeping clear records of your shared loans and payments.",
+    image: <OnBoarding3SVG />,
+    // image: require("../../../assets/onboarding/onboarding-3.png"),
     imageStyles: {
       width: 320,
       height: 320,
@@ -48,7 +57,8 @@ const slides = [
 const OnboardingScreen = ({ navigation }) => {
   const [currentIndex, setCurrentIndex] = useState(0)
   const slidesRef = useRef(null)
-
+  const colorScheme = useColorScheme()
+  const isDarkMode = colorScheme === "dark"
   const viewableItemsChanged = useCallback(({ viewableItems }) => {
     if (viewableItems[0]) {
       setCurrentIndex(viewableItems[0].index)
@@ -68,16 +78,13 @@ const OnboardingScreen = ({ navigation }) => {
   const renderItem = useCallback(
     ({ item }) => (
       <View style={styles.slide}>
-        <Image
-          source={item.image}
-          style={{
-            ...item.imageStyles,
-            // resizeMode: "contain",
-            marginBottom: 20,
-          }}
-        />
-        <Text style={styles.title}>{item.title}</Text>
-        <Text style={styles.description}>{item.description}</Text>
+        {item.image}
+        <Text style={[styles.title, { color: isDarkMode ? "#FFF" : "000" }]}>
+          {item.title}
+        </Text>
+        <Text className="text-center  px-5 text-gray-500 dark:text-gray-400">
+          {item.description}
+        </Text>
       </View>
     ),
     []
@@ -90,8 +97,14 @@ const OnboardingScreen = ({ navigation }) => {
       <View
         key={index}
         style={[
-          styles.indicator,
-          currentIndex === index && styles.activeIndicator,
+          [
+            styles.indicator,
+            { backgroundColor: isDarkMode ? "#8A8A8A" : "#E4E4E4" },
+          ],
+          currentIndex === index && [
+            { backgroundColor: isDarkMode ? "#FFF" : "#000" },
+            ,
+          ],
         ]}
       />
     ),
@@ -99,7 +112,12 @@ const OnboardingScreen = ({ navigation }) => {
   )
 
   return (
-    <SafeAreaView style={styles.container} className="text-red-500">
+    <SafeAreaView
+      style={[
+        styles.container,
+        { backgroundColor: isDarkMode ? "#212121" : "#F5F5F5" },
+      ]}
+    >
       <View style={styles.slideContainer}>
         <View style={{ alignItems: "center", marginTop: 50 }}>
           <Image
@@ -141,7 +159,6 @@ const OnboardingScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
   },
   slideContainer: {
     flex: 3,
@@ -178,15 +195,11 @@ const styles = StyleSheet.create({
   indicator: {
     height: 10,
     width: 10,
-    backgroundColor: "#ccc",
     marginHorizontal: 5,
     borderRadius: 5,
   },
-  activeIndicator: {
-    backgroundColor: "#000",
-  },
   button: {
-    backgroundColor: "#37C8C3",
+    backgroundColor: "#2F5B84",
     padding: 15,
     borderRadius: 5,
     alignItems: "center",
